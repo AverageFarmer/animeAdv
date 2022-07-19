@@ -438,7 +438,7 @@ elseif game.PlaceId == 8349889591 then
 
     Player.OnTeleport:Connect(function(State)
         if State == Enum.TeleportState.Started then
-            syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/animeAdv/main/AutoFarm.lua"))
+            syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/AutoFarm.lua"))
         end
     end)
 
