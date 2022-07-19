@@ -157,6 +157,8 @@ if game.PlaceId == 8304191830 then -- Lobby
     end
 
     function UpgradeData(UnitName)
+        print(UnitName)
+        UnitName = string.lower(UnitName)
         for i, Info in pairs(UnitsInfo) do
             if i == UnitName then
                 return table.getn(Info.upgrade)
