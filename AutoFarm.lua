@@ -197,6 +197,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         end
 
         for i,Info in pairs(MarinefordInfo) do
+            print(i)
             if i == UnitName then
                 return Info.spawn_cap
             end
