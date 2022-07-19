@@ -243,8 +243,8 @@ if game.PlaceId == 8304191830 then -- Lobby
                     UpgradeDropHolder[i]:Set(UnitData)
                     UpgradeDropHolder[i]:Refresh(MakeList(UnitData), true)
 
-                    PlacementDropHolder[i]:Set(Spawn_Cap)
-                    PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
+                    --PlacementDropHolder[i]:Set(Spawn_Cap)
+                    --PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
                 end
             end)
 
