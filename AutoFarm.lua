@@ -51,11 +51,10 @@ local Settings = {
     SpawnCaps = {},
     AutoBuy = {"summon_ticket"}
 }
+
 for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
     Settings[i] = v
 end
-
-
 
 syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/animeAdv/main/AutoFarm.lua"))
 
@@ -410,8 +409,7 @@ elseif game.PlaceId == 8349889591 then
         ["content-type"] = "application/json"
     }
 
-    if SavedSettings.Pause then
-        
+    if Settings.Pause then
         return
     end
 
