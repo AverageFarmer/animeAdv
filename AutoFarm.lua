@@ -2,7 +2,7 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 
---if _G.Loaded then return end
+if _G.Loaded then return end
 
 pcall(function()
     getgenv().rconsoleprint = a
