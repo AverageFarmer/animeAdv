@@ -2,7 +2,7 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 
-if _G.Loaded then return end
+--if _G.Loaded then return end
 
 pcall(function()
     getgenv().rconsoleprint = a
@@ -17,9 +17,7 @@ local Time = os.time()
 _G.Loaded = true
 
 repeat
-    
     task.wait(1)
-    print("GameStatus: " .. tostring(game:IsLoaded()))
 until game:IsLoaded() or (os.time() - Time) >= 10
 
 task.wait(5)
@@ -28,7 +26,7 @@ local Player = game.Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 local ClientToServer = ReplicatedStorage:WaitForChild("endpoints"):WaitForChild("client_to_server")
 local Units = game:GetService("Workspace")["_UNITS"]
-local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/library.lua"))()
+local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/library.lua"))()
 local url = "https://discord.com/api/webhooks/999000287664676927/W0O5Dbs4OEUkuUYlkjpdU8aYlonN3Qs1d2bXy2ULbTNRF9VrrFJK95rGYukTfgpmWY11"
 local Lobby = "_lobbytemplategreen1"
 
@@ -229,8 +227,8 @@ if game.PlaceId == 8304191830 then -- Lobby
         
         for i = 1, MaxSlots do
             local CurrentUnit = Settings.Units[i] or "None"
-            local UnitName = string.split(Settings.Units[i], ":")[2]
-            local Spawn_Cap = SpawnCap(UnitName)
+            local UnitName = (CurrentUnit ~= "None" and  string.split(Settings.Units[i], ":")[2]) or nil
+            local Spawn_Cap = (CurrentUnit ~= "None" and SpawnCap(UnitName) or 1)
 
             print(Spawn_Cap)
             UnitSettings:Dropdown("Unit" .. tostring(i), pets, CurrentUnit, "Unit"..tostring(i), function(newUnit)
