@@ -36,6 +36,7 @@ local Loader = require(src:WaitForChild("Loader"));
 local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
 local UnitsInfo = require(data.Units["pre-testing"].Units_PreTesting)
 local UnitsInfos = data.Units.release:GetChildren()
+local MarinefordInfo = require(data.Units.marineford.Units_Marineford)
 local Items = require(data.ItemsForSale)
 local SavedSettings = (isfile(FileName..tostring(Player.UserId) .. ".lua") and readfile(FileName .. tostring(Player.UserId) .. ".lua")) or {}
 local Settings = {
@@ -192,6 +193,12 @@ if game.PlaceId == 8304191830 then -- Lobby
                 if UnitsName == UnitName then
                     return UnitInfo.spawn_cap
                 end
+            end
+        end
+
+        for i,Info in pairs(MarinefordInfo) do
+            if i == UnitName then
+                return Info.spawn_cap
             end
         end
 
