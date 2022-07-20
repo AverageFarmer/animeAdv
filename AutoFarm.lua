@@ -579,18 +579,32 @@ elseif game.PlaceId == 8349889591 then
         end
     end
 
+    function GetSpawnCap(UnitName)
+        for Index, uuid_name in pairs(Settings.Units) do
+            local split = string.split(uuid_name, ":") -- uuid:name
+            local uuid = split[1]
+            local unitname = split[2]
+
+            if unitname == UnitName then
+                return Settings.SpawnCaps[Index]
+            end
+        end
+    end
+
     function spawnUnit(unit)
-        if Log[unit] and Log[unit] == 3 then return end
+        local Cap = GetSpawnCap(unit)
+        if Log[unit] and Log[unit] == Cap then return end
+        if not Maps[Settings.Map][SpawnNum] then return end
         local args = {
             [1] = FarmUnits[unit],
             [2] = Maps[Settings.Map][SpawnNum]
         }
         
         local placed
-        print(unit)
+        
         repeat
             placed = ClientToServer:WaitForChild("spawn_unit"):InvokeServer(unpack(args))
-            task.wait(2)
+            task.wait(1)
         until placed
 
         if placed then
@@ -655,7 +669,8 @@ elseif game.PlaceId == 8349889591 then
 
         for Name, v in pairs(FarmUnits) do
             print(Name)
-            for i = 1, 3 do
+            local Cap = GetSpawnCap(Name) -- Spawn Cap
+            for i = 1, Cap do
                 task.wait(1)
                 spawnUnit(Name)
             end
