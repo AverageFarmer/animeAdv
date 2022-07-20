@@ -93,7 +93,7 @@ if game.PlaceId == 8304191830 then -- Lobby
     local UpgradeDropHolder = {
 
     }
-    local PlacementDropHolder
+    local PlacementDropHolder = {}
 
     local window = SolarisLib:New({
         Name = "DizFarm Version:1.0a",
@@ -241,12 +241,14 @@ if game.PlaceId == 8304191830 then -- Lobby
         table.insert(pets, "None")
         
         for i = 1, MaxSlots do
+
             local CurrentUnit = Settings.Units[i] or "None"
             local UnitName = (CurrentUnit ~= "None" and  string.split(Settings.Units[i], ":")[2]) or nil
             local Spawn_Cap = (CurrentUnit ~= "None" and SpawnCap(UnitName) or 1)
 
-            print(Spawn_Cap)
-            UnitSettings:Dropdown("Unit" .. tostring(i), pets, CurrentUnit, "Unit"..tostring(i), function(newUnit)
+            UnitSettings:Label("Unit#" .. tostring(i), Color3.new(1, 0, 0))
+
+            UnitSettings:Dropdown("Unit", pets, CurrentUnit, "Unit"..tostring(i), function(newUnit)
                 Settings.Units[i] = newUnit
                 Save()
 
@@ -255,8 +257,10 @@ if game.PlaceId == 8304191830 then -- Lobby
                     UpgradeDropHolder[i]:Set(UnitData)
                     UpgradeDropHolder[i]:Refresh(MakeList(UnitData), true)
 
-                    --PlacementDropHolder[i]:Set(Spawn_Cap)
-                    --PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
+                    if PlacementDropHolder[i] then
+                        PlacementDropHolder[i]:Set(Spawn_Cap)
+                        PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
+                    end
                 end
             end)
 
@@ -265,10 +269,10 @@ if game.PlaceId == 8304191830 then -- Lobby
                 Save()
             end)
 
-            --[[PlacementDropHolder[i] = UnitSettings:Dropdown("SpawnCap" .. tostring(i),(CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, Settings.SpawnCaps[i] or 1, "SpawnCap" .. tostring(i), function(newcap)
+            PlacementDropHolder[i] = UnitSettings:Dropdown("SpawnCap" .. tostring(i),(CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, Settings.SpawnCaps[i] or 1, "SpawnCap" .. tostring(i), function(newcap)
                 Settings.SpawnCaps[i] = newcap
                 Save()
-            end)--]]
+            end)
         end
     end
 
