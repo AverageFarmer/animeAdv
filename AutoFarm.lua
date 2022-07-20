@@ -257,10 +257,8 @@ if game.PlaceId == 8304191830 then -- Lobby
                     UpgradeDropHolder[i]:Set(UnitData)
                     UpgradeDropHolder[i]:Refresh(MakeList(UnitData), true)
 
-                    if PlacementDropHolder[i] then
-                        PlacementDropHolder[i]:Set(Spawn_Cap)
-                        PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
-                    end
+                    PlacementDropHolder[i]:Set(Spawn_Cap)
+                    PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
                 end
             end)
 
@@ -480,6 +478,9 @@ elseif game.PlaceId == 8349889591 then
             CFrame.new(-2938.24, 93.0863, -704.334),
             CFrame.new(-2938.08, 93.0863, -708.257),
             CFrame.new(-2938.08, 93.0863, -714.257),
+            CFrame.new(-2953.14, 93.0863, -699.354),
+            CFrame.new(-2953.25, 93.0863, -703.934),
+            CFrame.new(-2953.28, 93.08, -708.07)
         },
         ["aot"] = CFrame.new(-3011.77393, 35.0377998, -684.094604),
         ["demonslayer"] = CFrame.new(-2876.57, 35.643, -135.408),
