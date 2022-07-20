@@ -264,12 +264,12 @@ if game.PlaceId == 8304191830 then -- Lobby
                 end
             end)
 
-            UpgradeDropHolder[i] = UnitSettings:Dropdown("Upgrade" .. tostring(i),(CurrentUnit ~= "None" and MakeList(UpgradeData(UnitName))) or {}, Settings._Upgrades[i] or 1, "Upgrade"..tostring(i), function(newUnit)
+            UpgradeDropHolder[i] = UnitSettings:Dropdown("Upgrade",(CurrentUnit ~= "None" and MakeList(UpgradeData(UnitName))) or {}, Settings._Upgrades[i] or 1, "Upgrade"..tostring(i), function(newUnit)
                 Settings._Upgrades[i] = newUnit
                 Save()
             end)
 
-            PlacementDropHolder[i] = UnitSettings:Dropdown("SpawnCap" .. tostring(i),(CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, Settings.SpawnCaps[i] or 1, "SpawnCap" .. tostring(i), function(newcap)
+            PlacementDropHolder[i] = UnitSettings:Dropdown("SpawnCap",(CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, Settings.SpawnCaps[i] or 1, "SpawnCap" .. tostring(i), function(newcap)
                 Settings.SpawnCaps[i] = newcap
                 Save()
             end)
