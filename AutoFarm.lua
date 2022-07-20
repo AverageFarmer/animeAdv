@@ -671,17 +671,17 @@ elseif game.PlaceId == 8349889591 then
 
     function spawnUnit(unit)
         local Cap = GetSpawnCap(unit)
-        local ishill_unit = IsHillUnit(unit)
-        local Type = (ishill_unit and "Hill") or "Ground"
+        --local ishill_unit = IsHillUnit(unit)
+        local Type = "Ground"
         if Log[unit] and Log[unit] == Cap then return end
-        if ishill_unit then
+        --[[if ishill_unit then
             if not Maps[Settings.Map][Type][hillSpawnNum] then return end
         else
-            if not Maps[Settings.Map][Type][SpawnNum] then return end
-        end
+        end--]]
+        if not Maps[Settings.Map][Type][SpawnNum] then return end
         local args = {
             [1] = FarmUnits[unit],
-            [2] = (ishill_unit and Maps[Settings.Map][Type][hillSpawnNum]) or Maps[Settings.Map][Type][SpawnNum]
+            [2] = Maps[Settings.Map][Type][SpawnNum]
         }
         
         local placed
@@ -697,11 +697,8 @@ elseif game.PlaceId == 8349889591 then
             else
                 Log[unit] += 1
             end
-            if ishill_unit then
-                hillSpawnNum += 1
-            else
-                SpawnNum += 1
-            end
+
+            SpawnNum += 1
         end
     end
 
