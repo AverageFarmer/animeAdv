@@ -381,7 +381,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         TeleportToMap()
     end
 
-    local function localTeleportWithRetry(placeId, retryTime)
+    local function localTeleportWithRetry(_, retryTime)
         local connection
         connection = TeleportService.TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
             if player == Player then
