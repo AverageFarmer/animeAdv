@@ -68,6 +68,15 @@ end
 if game.PlaceId == 8304191830 then -- Lobby
     local Lobbies = game:GetService("Workspace")["_LOBBIES"].Story
 
+    local TeleportAreas = {
+        ["Challenges"] = CFrame.new(82.5503769, 194.505249, -373.466858),
+        ["Leaderboard"] = CFrame.new(384.928, 195.666, -657.437),
+        ["Summon"] = CFrame.new(252.503937, 196.631577, -769.12146),
+        ["Traits"] = CFrame.new(418.272, 195.333, -531.499),
+        ["Evolve"] = CFrame.new(561.148, 192.849, -527.637),
+        ["Play"] = CFrame.new(47.8356, 196.307, -525.739)
+    }
+
     local Maps = {
         "namek",
         --"aot",
@@ -96,7 +105,7 @@ if game.PlaceId == 8304191830 then -- Lobby
     local PlacementDropHolder = {}
 
     local window = SolarisLib:New({
-        Name = "DizFarm Version:1.0b",
+        Name = "DizFarm Version:1.0c",
         FolderToSave = "DizNuts"
     })
     local SettingsWindow = window:Tab("Settings") -- Creates the window
@@ -107,6 +116,7 @@ if game.PlaceId == 8304191830 then -- Lobby
     local ShopSettings = SettingsWindow:Section("ShopSettings")
 
     local TeleportWindow = window:Tab("Teleports") -- Creates the window
+    local Areas = TeleportWindow:Section("Areas")
 
     function ShopItems()
         local items = {}
@@ -228,7 +238,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
         local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
         local pets = {}
-        local MaxSlots = 4
+        local MaxSlots = 5
             
         for Index, uuid in pairs(equipped) do
             if AllUnits[uuid] then
@@ -277,6 +287,12 @@ if game.PlaceId == 8304191830 then -- Lobby
                 Save()
             end)
         end
+    end
+
+    for Area, Position in pairs(TeleportAreas) do
+        Areas:Button(Area, function()
+            Player.Character:SetPrimaryPartCFrame(Position)
+        end)
     end
 
     function GetShopItems()
@@ -371,7 +387,7 @@ if game.PlaceId == 8304191830 then -- Lobby
             if player == Player then
                 print("Teleport failed, TeleportResult: "..teleportResult.Name)
                 -- check the teleportResult to ensure it is appropriate to retry
-                if teleportResult == Enum.TeleportResult.Flooded or teleportResult == Enum.TeleportResult.Failure then
+                if teleportResult == Enum.TeleportResult.GameEnded or teleportResult == Enum.TeleportResult.Flooded or teleportResult == Enum.TeleportResult.Failure then
                     game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
                     -- disconnect the connection
                     --connection:Disconnect()
@@ -468,45 +484,64 @@ elseif game.PlaceId == 8349889591 then
     }
 
     local SpawnNum = 1
+    local hillSpawnNum = 1
 
     local Maps = {
         ["namek"] = {
-            CFrame.new(-2948.09, 93.0863, -710.218),
-            CFrame.new(-2948.45, 93.0863, -705.009),
-            CFrame.new(-2947.92, 93.0863, -699.637),
-            CFrame.new(-2944.91, 93.7245, -702.243),
-            CFrame.new(-2945.11, 93.0863, -707.568),
-            CFrame.new(-2943.05, 93.7245, -699.922),
-            CFrame.new(-2943.33, 93.7245, -704.45),
-            CFrame.new(-2943.34, 93.7245, -709.403),
-            CFrame.new(-2938.52, 93.0863, -700.306),
-            CFrame.new(-2938.24, 93.0863, -704.334),
-            CFrame.new(-2938.08, 93.0863, -708.257),
-            CFrame.new(-2938.08, 93.0863, -714.257),
-            CFrame.new(-2953.14, 93.0863, -699.354),
-            CFrame.new(-2953.25, 93.0863, -703.934),
-            CFrame.new(-2953.28, 93.08, -708.07)
+            ["Ground"] = {
+                CFrame.new(-2948.09, 93.0863, -710.218),
+                CFrame.new(-2944.91, 93.7245, -702.243),
+                CFrame.new(-2938.52, 93.0863, -700.306),
+                CFrame.new(-2947.92, 93.0863, -699.637),
+                CFrame.new(-2948.45, 93.0863, -705.009),
+                CFrame.new(-2945.11, 93.0863, -707.568),
+                CFrame.new(-2943.05, 93.7245, -699.922),
+                CFrame.new(-2943.33, 93.7245, -704.45),
+                CFrame.new(-2943.34, 93.7245, -709.403),
+                CFrame.new(-2938.24, 93.0863, -704.334),
+                CFrame.new(-2938.08, 93.0863, -708.257),
+                CFrame.new(-2938.08, 93.0863, -714.257),
+                CFrame.new(-2953.14, 93.0863, -699.354),
+                CFrame.new(-2953.25, 93.0863, -703.934),
+                CFrame.new(-2953.28, 93.08, -708.07)
+            },
+
+            ["Hill"] = {
+                CFrame.new(-2948.11, 95.6987, -715.501),
+                CFrame.new(-2950.38, 95.6987, -715.032),
+                CFrame.new(-2949.47, 95.6987, -717.193),
+                CFrame.new(-2951.92, 95.6987, -716.304)
+            }
         },
         ["aot"] = CFrame.new(-3011.77393, 35.0377998, -684.094604),
         ["demonslayer"] = CFrame.new(-2876.57, 35.643, -135.408),
         ["naruto"] = CFrame.new(-890.466, 26.577, 313.911),
         ["marineford"] = {
-            CFrame.new(-2555.5, 26.5069, -34.7715),
-            CFrame.new(-2554.21, 26.4909, -38.005),
-            CFrame.new(-2557.89, 26.4909, -40.7217),
-            CFrame.new(-2559.47, 26.5069, -36.8724),
-            CFrame.new(-2560.72, 26.7268, -45.002),
-            CFrame.new(-2562.53, 26.7268, -40.3499),
-            CFrame.new(-2564.53, 26.4909, -45.5189),
-            CFrame.new(-2554.32, 26.4909, -42.6333),
-            CFrame.new(-2562.45, 27.1292, -36.9791),
-            CFrame.new(-2557.22, 27.1292, -46.057),
-            CFrame.new(-2566.13, 26.5069, -42.2897),
-            CFrame.new(-2560.84, 26.4909, -49.0243),
-            CFrame.new(-2555.5, 29.5069, -34.7715),
-            CFrame.new(-2554.21, 29.4909, -38.005),
-            CFrame.new(-2557.89, 29.4909, -40.7217),
-            CFrame.new(-2559.47, 29.5069, -36.8724),
+            ["Ground"] = {
+                CFrame.new(-2555.5, 26.5069, -34.7715),
+                CFrame.new(-2554.21, 26.4909, -38.005),
+                CFrame.new(-2557.89, 26.4909, -40.7217),
+                CFrame.new(-2559.47, 26.5069, -36.8724),
+                CFrame.new(-2560.72, 26.7268, -45.002),
+                CFrame.new(-2562.53, 26.7268, -40.3499),
+                CFrame.new(-2564.53, 26.4909, -45.5189),
+                CFrame.new(-2554.32, 26.4909, -42.6333),
+                CFrame.new(-2562.45, 27.1292, -36.9791),
+                CFrame.new(-2557.22, 27.1292, -46.057),
+                CFrame.new(-2566.13, 26.5069, -42.2897),
+                CFrame.new(-2560.84, 26.4909, -49.0243),
+                CFrame.new(-2555.5, 29.5069, -34.7715),
+                CFrame.new(-2554.21, 29.4909, -38.005),
+                CFrame.new(-2557.89, 29.4909, -40.7217),
+                CFrame.new(-2559.47, 29.5069, -36.8724),
+            },
+
+            ["Hill"] = {
+                CFrame.new(-2573.74, 30.781, -51.5541),
+                CFrame.new(-2576.48, 30.781, -53.3122),
+                CFrame.new(-2578.58, 29.6381, -56.3211),
+                CFrame.new(-2576.05, 29.638, -57.737),
+            }
         },
     }
 
@@ -601,13 +636,52 @@ elseif game.PlaceId == 8349889591 then
         end
     end
 
+    function IsHillUnit(UnitName)
+        UnitName = string.lower(UnitName)
+        for i, Info in pairs(UnitsInfo) do
+            if i == UnitName then
+                if Info.hill_unit then
+                    return true
+                end
+            end
+        end
+
+        for i, Module in pairs(UnitsInfos) do
+            local Info = require(Module)
+
+            for UnitsName, UnitInfo in pairs(Info) do
+                if UnitsName == UnitName then
+                    if UnitInfo.hill_unit then
+                        return true
+                    end
+                end
+            end
+        end
+
+        for i,Info in pairs(MarinefordInfo) do
+            if i == UnitName then
+                if Info.hill_unit then
+                    return true
+                end
+            end
+        end
+
+        return false
+    end
+
     function spawnUnit(unit)
         local Cap = GetSpawnCap(unit)
+        local ishill_unit = IsHillUnit(unit)
+        local Type = (ishill_unit and "Hill") or "Ground"
         if Log[unit] and Log[unit] == Cap then return end
-        if not Maps[Settings.Map][SpawnNum] then return end
+        if ishill_unit then
+            if not Maps[Settings.Map][Type][hillSpawnNum] then return end
+        else
+            if not Maps[Settings.Map][Type][SpawnNum] then return end
+        end
         local args = {
             [1] = FarmUnits[unit],
-            [2] = Maps[Settings.Map][SpawnNum]
+            [2] = (ishill_unit and Maps[Settings.Map][Type][hillSpawnNum]) or Maps[Settings.Map][Type][SpawnNum]
         }
         
         local placed
@@ -623,7 +697,11 @@ elseif game.PlaceId == 8349889591 then
             else
                 Log[unit] += 1
             end
-            SpawnNum += 1
+            if ishill_unit then
+                hillSpawnNum += 1
+            else
+                SpawnNum += 1
+            end
         end
     end
 
