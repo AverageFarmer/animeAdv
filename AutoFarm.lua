@@ -96,7 +96,7 @@ if game.PlaceId == 8304191830 then -- Lobby
     local PlacementDropHolder = {}
 
     local window = SolarisLib:New({
-        Name = "DizFarm Version:1.0a",
+        Name = "DizFarm Version:1.0b",
         FolderToSave = "DizNuts"
     })
     local SettingsWindow = window:Tab("Settings") -- Creates the window
