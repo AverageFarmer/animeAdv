@@ -177,7 +177,7 @@ if game.PlaceId == 8304191830 then -- Lobby
 
         for i,Info in pairs(MarinefordInfo) do
             if i == UnitName then
-                return Info.spawn_cap
+                return table.getn(Info.upgrade)
             end
         end
 
