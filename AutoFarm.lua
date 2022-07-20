@@ -249,10 +249,14 @@ if game.PlaceId == 8304191830 then -- Lobby
             UnitSettings:Label("Unit#" .. tostring(i), Color3.new(1, 0, 0))
 
             UnitSettings:Dropdown("Unit", pets, CurrentUnit, "Unit"..tostring(i), function(newUnit)
+                CurrentUnit = newUnit or "None"
+                Spawn_Cap = (CurrentUnit ~= "None" and SpawnCap(newUnit) or 1)
+                
                 Settings.Units[i] = newUnit
                 Save()
 
                 if UpgradeDropHolder[i] and newUnit ~= "None"  then
+                    
                     local UnitData = UpgradeData(string.split(Settings.Units[i], ":")[2])
                     UpgradeDropHolder[i]:Set(UnitData)
                     UpgradeDropHolder[i]:Refresh(MakeList(UnitData), true)
