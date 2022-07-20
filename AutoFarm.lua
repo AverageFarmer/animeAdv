@@ -389,9 +389,7 @@ if game.PlaceId == 8304191830 then -- Lobby
                 -- check the teleportResult to ensure it is appropriate to retry
                 if teleportResult == Enum.TeleportResult.GameEnded or teleportResult == Enum.TeleportResult.Flooded or teleportResult == Enum.TeleportResult.Failure then
                     game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
-                    -- disconnect the connection
-                    --connection:Disconnect()
-                    -- retry in retryTime seconds
+                    print("Teleportfailed L")
                     task.delay(retryTime, function()
                         print("Reattempting teleport")
                         TeleportToMap()
