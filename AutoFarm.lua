@@ -5,11 +5,11 @@ local TeleportService = game:GetService("TeleportService")
 if _G.Loaded then return end
 
 pcall(function()
-    getgenv().rconsoleprint = a
+    getgenv().rconsoleprint = b
     getgenv().printconsole = a
-    getgenv().rconsoleprint = a
+    getgenv().rconsoleprint = dsadfsdf
     getgenv().setclipboard = a
-    getgenv().hookfunction = a
+    getgenv().hookfunction = gdfg
 end) 
 
 local FileName = "DizFarm"
