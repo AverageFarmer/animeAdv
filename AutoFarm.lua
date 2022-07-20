@@ -250,8 +250,9 @@ if game.PlaceId == 8304191830 then -- Lobby
 
             UnitSettings:Dropdown("Unit", pets, CurrentUnit, "Unit"..tostring(i), function(newUnit)
                 CurrentUnit = newUnit or "None"
-                Spawn_Cap = (CurrentUnit ~= "None" and SpawnCap(newUnit) or 1)
-                
+                UnitName = (CurrentUnit ~= "None" and  string.split(CurrentUnit, ":")[2]) or nil
+                Spawn_Cap = (CurrentUnit ~= "None" and SpawnCap(UnitName) or 1)
+
                 Settings.Units[i] = newUnit
                 Save()
 
