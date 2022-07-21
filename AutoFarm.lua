@@ -36,10 +36,8 @@ local src = game.ReplicatedStorage:WaitForChild("src")
 local data = src:WaitForChild("Data")
 local Loader = require(src:WaitForChild("Loader"));
 local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
-local UnitsInfo = require(data.Units["pre-testing"].Units_PreTesting)
-local UnitsInfos = data.Units.release:GetChildren()
-local MarinefordInfo = require(data.Units.marineford.Units_Marineford)
-local Items = require(data.ItemsForSale)
+local UnitsInfo = require(data.Units)
+local Items = require(data:WaitForChild("ItemsForSale"))
 local SavedSettings = (isfile(FileName..tostring(Player.UserId) .. ".lua") and readfile(FileName .. tostring(Player.UserId) .. ".lua")) or {}
 local Settings = {
     Map = "namek",
@@ -52,8 +50,23 @@ local Settings = {
     Units = {},
     _Upgrades = {},
     SpawnCaps = {},
-    AutoBuy = {"summon_ticket"}
+    AutoBuy = {"summon_ticket"},
+
+    AutoDelete = {
+        Enabled = false, 
+        Rarities = {"Rare"}, 
+        KeepShiny = true
+    },
+
+    AutoSummon = {
+        Enabled = false, 
+        x10 = false,
+        SummonFor = {
+
+        }
+    },
 }
+
 
 for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
     Settings[i] = v
@@ -65,6 +78,39 @@ function ChangeSetting(SettingName, Value)
     Settings[SettingName] = Value
     
     Save()
+end
+
+function GetUnitInfo(UnitName)
+    if not UnitName then return end
+    for i, Info in pairs(UnitsInfo) do
+        if i == UnitName then
+            return Info
+        end
+    end
+
+    return 
+end
+
+function GetMythics()
+    local Mythics = {}
+    for i, Info in pairs(UnitsInfo) do
+        if Info.rarity and Info.rarity == "Mythic" and not string.match(i,"_evolved") then
+            if Info.hide_from_banner then continue end
+            table.insert(Mythics, i)
+        end
+    end
+
+    return Mythics
+end
+
+function ShopItems()
+    local items = {}
+
+    for i,v in pairs(Items) do
+        table.insert(items, i)
+    end
+
+    return items
 end
 
 if game.PlaceId == 8304191830 then -- Lobby
@@ -95,182 +141,157 @@ if game.PlaceId == 8304191830 then -- Lobby
         "5",
         "6"
     }
-
+    
     local Difficulties = {
         "Normal",
         "Hard"
     }
+
+    local Rarities = {
+        "Rare",
+        "Epic",
+        "Legendary"
+    }
     local ctrl = false
-
+    
     local UpgradeDropHolder = {
-
+        
     }
     local PlacementDropHolder = {}
-
+    
     local window = SolarisLib:New({
-        Name = "DizFarm Version:1.0c",
+        Name = "DizFarm Version:1.0d",
         FolderToSave = "DizNuts"
     })
     local SettingsWindow = window:Tab("Settings") -- Creates the window
-
+    
     local MapSection = SettingsWindow:Section("MapSettings")
     local TeleportSettings = SettingsWindow:Section("TeleportSettings")
     local UnitSettings = SettingsWindow:Section("UnitSettings")
     local ShopSettings = SettingsWindow:Section("ShopSettings")
-
+    
     local TeleportWindow = window:Tab("Teleports") -- Creates the window
     local Areas = TeleportWindow:Section("Areas")
+    
+    local SummonSettings = window:Tab("SummonSettings") -- Creates the window
+    local AutoSummon = SummonSettings:Section("AutoSummon")
+    local AutoDelete = SummonSettings:Section("AutoDelete")
 
-    function ShopItems()
-        local items = {}
-
-        for i,v in pairs(Items) do
-            table.insert(items, i)
-        end
-
-        return items
-    end
-
+    --[[
+        -- AutoDelete > Toggle
+        -- KeepShiny > Toggle
+        -- AutoDeleteRarity > MultiDropdown  (Everything but mythic+)
+    ]]
+    
     MapSection:Dropdown("Map", Maps, Settings.Map, "MapDrop", function(NewMap)
         ChangeSetting("Map", NewMap)
     end)
+
     MapSection:Dropdown("MapNumber", Numbers, Settings.MapNumber, "Mapnumber", function(NewNumber)
         ChangeSetting("MapNumber", NewNumber)
     end)
     MapSection:Dropdown("Difficulty", Difficulties, Settings.Difficulty, "Difficulty", function(NewDiff)
         ChangeSetting("Difficulty", NewDiff)
     end)
-
+    
     MapSection:Toggle("Infinite", Settings.IsInf, "Infinite", function(bool)
         ChangeSetting("IsInf", bool)
     end)
-
+    
     SellAt = MapSection:Textbox("SellAt", false, tostring(Settings.SellAt), function(Text)
         Text = tonumber(Text) or 1
         ChangeSetting("SellAt", Text)
         SellAt:Set(Text)
     end)
-
+    
     TeleportSettings:Toggle("Pause", Settings.Pause, "Pause", function(bool)
         ChangeSetting("Pause", bool)
     end)
 
-    ShopSettings:MultiDropdown("Shop", ShopItems(), Settings.AutoBuy, "Shop", function(NewDiff)
+    ShopSettings:MultiDropdown("Shop", ShopItems(), Settings.AutoBuy, "S34hop", function(NewDiff)
         ChangeSetting("AutoBuy", NewDiff)
     end)
 
-    function GetPlayersLevel()
-        local exp = Player._stats.player_xp.Value
+    local auto
+    auto = AutoSummon:Toggle("AutoSummon", Settings.AutoSummon.Enabled, "AutoSum", function(bool)
+        Settings.AutoSummon.Enabled = bool
+        Save()
 
-        return math.floor(0.07142857142857142 * (-179 + math.sqrt(56 * exp + 37249)));
+        if bool then
+            repeat
+                local open = (Settings.AutoSummon.x10 and "gems10") or "gems"
+                local CanSummon = game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_random_fighter:InvokeServer("dbz_fighter", open)
+                if not CanSummon then
+                    auto:Set(false)
+                else
+                    task.wait(3)
+                    mouse1click()
+                end
+                task.wait()
+            until not Settings.AutoSummon.Enabled
+        end
+    end)
+
+    AutoSummon:Toggle("x10", Settings.AutoSummon.x10, "x10", function(bool)
+        Settings.AutoSummon.x10 = bool
+        Save()
+    end)
+
+    AutoSummon:MultiDropdown("SummonFor (Mythic) -- Not Done", GetMythics(), Settings.AutoSummon.SummonFor or {}, "summonfor", function(units)
+        Settings.AutoSummon.SummonFor = units
+        Save()
+    end)
+
+    AutoDelete:Toggle("AutoDelete", Settings.AutoDelete.Enabled, "AutoDelete", function(bool)
+        Settings.AutoDelete.Enabled = bool
+        Save()
+    end)
+
+    AutoDelete:Toggle("KeepShiny", Settings.AutoDelete.KeepShiny, "KeepShiny", function(bool)
+        Settings.AutoDelete.KeepShiny = bool
+        Save()
+    end)
+
+    AutoDelete:MultiDropdown("Rarities", Rarities, Settings.AutoDelete.Rarities, "Rarities", function(AddedRarities)
+        Settings.AutoDelete.Rarities = AddedRarities
+        Save()
+    end)
+
+    for Area, Position in pairs(TeleportAreas) do
+        Areas:Button(Area, function()
+            Player.Character:SetPrimaryPartCFrame(Position)
+        end)
     end
 
+    
+    function GetPlayersLevel()
+        local exp = Player._stats.player_xp.Value
+        
+        return math.floor(0.07142857142857142 * (-179 + math.sqrt(56 * exp + 37249)));
+    end
+    
     function Save()
         writefile(FileName..tostring(Player.UserId) .. ".lua", HttpService:JSONEncode(Settings))
     end
-
 
     UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
         if input.UserInputType == Enum.UserInputType.MouseButton1 and ctrl then
             local Character = Player.Character
             local Humanoid = Character.Humanoid
-
+            
             Character:SetPrimaryPartCFrame(CFrame.new(Mouse.Hit.Position) * CFrame.new(0, Humanoid.HipHeight, 0))
         end
-
+        
         if input.KeyCode == Enum.KeyCode.LeftControl then
             ctrl = true
         end
     end)
-
+    
     UserInputService.InputEnded:Connect(function(input, gameProcessedEvent)
         if input.KeyCode == Enum.KeyCode.LeftControl then
             ctrl = false
         end
     end)
-
-    function UpgradeData(UnitName)
-        print(UnitName)
-        UnitName = string.lower(UnitName)
-        for i, Info in pairs(UnitsInfo) do
-            if i == UnitName then
-                return table.getn(Info.upgrade)
-            end
-        end
-
-        for i, Module in pairs(UnitsInfos) do
-            local Info = require(Module)
-
-            for UnitsName, UnitInfo in pairs(Info) do
-                if UnitsName == UnitName then
-                    return table.getn(UnitInfo.upgrade)
-                end
-            end
-        end
-
-        for i,Info in pairs(MarinefordInfo) do
-            if i == UnitName then
-                return table.getn(Info.upgrade)
-            end
-        end
-
-        return 5
-    end
-
-    function SpawnCap(UnitName)
-        UnitName = string.lower(UnitName)
-        for i, Info in pairs(UnitsInfo) do
-            if i == UnitName then
-                return Info.spawn_cap
-            end
-        end
-
-        for i, Module in pairs(UnitsInfos) do
-            local Info = require(Module)
-
-            for UnitsName, UnitInfo in pairs(Info) do
-                if UnitsName == UnitName then
-                    return UnitInfo.spawn_cap
-                end
-            end
-        end
-
-        for i,Info in pairs(MarinefordInfo) do
-            print(i)
-            if i == UnitName then
-                return Info.spawn_cap
-            end
-        end
-
-        return 1
-    end
-
-    function GetUnitInfo(UnitName)
-        UnitName = string.lower(UnitName)
-        for i, Info in pairs(UnitsInfo) do
-            if i == UnitName then
-                return Info
-            end
-        end
-
-        for i, Module in pairs(UnitsInfos) do
-            local Info = require(Module)
-
-            for UnitsName, UnitInfo in pairs(Info) do
-                if UnitsName == UnitName then
-                    return UnitInfo
-                end
-            end
-        end
-
-        for i,Info in pairs(MarinefordInfo) do
-            if i == UnitName then
-                return Info
-            end
-        end
-
-        return 
-    end
 
     function MakeList(num)
         local list = {}
@@ -279,7 +300,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         end
         return list
     end
-
+    
     function GetUnits()
         task.wait(3)
         repeat
@@ -301,33 +322,33 @@ if game.PlaceId == 8304191830 then -- Lobby
         table.insert(pets, "None")
         
         for i = 1, MaxSlots do
-
             local CurrentUnit = Settings.Units[i] or "None"
             local UnitName = (CurrentUnit ~= "None" and  string.split(Settings.Units[i], ":")[2]) or nil
-            local Spawn_Cap = (CurrentUnit ~= "None" and SpawnCap(UnitName) or 1)
-
+            local UnitData = (GetUnitInfo(UnitName))
+            local Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 1)
+            
             UnitSettings:Label("Unit#" .. tostring(i), Color3.new(1, 0, 0))
-
+            
             UnitSettings:Dropdown("Unit", pets, CurrentUnit, "Unit"..tostring(i), function(newUnit)
+                UnitData = GetUnitInfo(UnitName)
                 CurrentUnit = newUnit or "None"
                 UnitName = (CurrentUnit ~= "None" and  string.split(CurrentUnit, ":")[2]) or nil
-                Spawn_Cap = (CurrentUnit ~= "None" and SpawnCap(UnitName) or 1)
+                Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 1)
 
                 Settings.Units[i] = newUnit
                 Save()
 
                 if UpgradeDropHolder[i] and newUnit ~= "None"  then
                     
-                    local UnitData = UpgradeData(string.split(Settings.Units[i], ":")[2])
                     UpgradeDropHolder[i]:Set(UnitData)
-                    UpgradeDropHolder[i]:Refresh(MakeList(UnitData), true)
+                    UpgradeDropHolder[i]:Refresh(MakeList(#UnitData.upgrades), true)
 
                     PlacementDropHolder[i]:Set(Spawn_Cap)
                     PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
                 end
             end)
 
-            UpgradeDropHolder[i] = UnitSettings:Dropdown("Upgrade",(CurrentUnit ~= "None" and MakeList(UpgradeData(UnitName))) or {}, Settings._Upgrades[i] or 1, "Upgrade"..tostring(i), function(newUnit)
+            UpgradeDropHolder[i] = UnitSettings:Dropdown("Upgrade",(CurrentUnit ~= "None" and MakeList(#UnitData.upgrade)) or {}, Settings._Upgrades[i] or 1, "Upgrade"..tostring(i), function(newUnit)
                 Settings._Upgrades[i] = newUnit
                 Save()
             end)
@@ -339,10 +360,42 @@ if game.PlaceId == 8304191830 then -- Lobby
         end
     end
 
-    for Area, Position in pairs(TeleportAreas) do
-        Areas:Button(Area, function()
-            Player.Character:SetPrimaryPartCFrame(Position)
-        end)
+    function DeleteRarityCheck(rarity)
+        for _, v in pairs(Settings.AutoDelete.Rarities) do
+            if rarity == v then
+                return true
+            end
+        end
+        return false
+    end
+
+
+    
+    
+    
+    function AutoDelete()
+        if Settings.AutoDelete.Enabled then
+            local UnitsToDelete = {}
+            local allUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
+            --equipped_slot
+            for _, v in pairs(allUnits) do
+                local Info = GetUnitInfo(v.unit_id)
+                print(v.shiny)
+                if v.xp ~= 0 then continue end
+                if Info.limited then continue end
+                if DeleteRarityCheck(Info.rarity) and not v.equipped_slot then
+                    if not Settings.AutoDelete.KeepShiny then
+                        table.insert(UnitsToDelete, v.uuid)
+                    else
+                        if not v.shiny then
+                            table.insert(UnitsToDelete, v.uuid)
+                        end
+                    end
+                end
+            end
+            
+            game:GetService("ReplicatedStorage").endpoints.client_to_server.sell_units:InvokeServer(UnitsToDelete)
+        end
     end
 
     function GetShopItems()
@@ -472,6 +525,13 @@ if game.PlaceId == 8304191830 then -- Lobby
             task.spawn(function()
                 AutoBuyItems()
             end)
+            task.wait(1)
+        until false
+    end)
+
+    task.spawn(function()
+        repeat
+            AutoDelete()
             task.wait(1)
         until false
     end)
@@ -684,48 +744,10 @@ elseif game.PlaceId == 8349889591 then
         end
     end
 
-    function IsHillUnit(UnitName)
-        UnitName = string.lower(UnitName)
-        for i, Info in pairs(UnitsInfo) do
-            if i == UnitName then
-                if Info.hill_unit then
-                    return true
-                end
-            end
-        end
-
-        for i, Module in pairs(UnitsInfos) do
-            local Info = require(Module)
-
-            for UnitsName, UnitInfo in pairs(Info) do
-                if UnitsName == UnitName then
-                    if UnitInfo.hill_unit then
-                        return true
-                    end
-                end
-            end
-        end
-
-        for i,Info in pairs(MarinefordInfo) do
-            if i == UnitName then
-                if Info.hill_unit then
-                    return true
-                end
-            end
-        end
-
-        return false
-    end
-
     function spawnUnit(unit)
         local Cap = GetSpawnCap(unit)
-        --local ishill_unit = IsHillUnit(unit)
         local Type = "Ground"
         if Log[unit] and Log[unit] == Cap then return end
-        --[[if ishill_unit then
-            if not Maps[Settings.Map][Type][hillSpawnNum] then return end
-        else
-        end--]]
         if not Maps[Settings.Map][Type][SpawnNum] then return end
         local args = {
             [1] = FarmUnits[unit],
