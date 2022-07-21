@@ -23,8 +23,10 @@ until game:IsLoaded() or (os.time() - Time) >= 10
 task.wait(5)
 
 local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
 local PlayerGui = Player:WaitForChild("PlayerGui")
 local ClientToServer = ReplicatedStorage:WaitForChild("endpoints"):WaitForChild("client_to_server")
+local UserInputService = game:GetService("UserInputService")
 local Units = game:GetService("Workspace")["_UNITS"]
 local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/library.lua"))()
 local url = "https://discord.com/api/webhooks/999000287664676927/W0O5Dbs4OEUkuUYlkjpdU8aYlonN3Qs1d2bXy2ULbTNRF9VrrFJK95rGYukTfgpmWY11"
@@ -166,6 +168,16 @@ if game.PlaceId == 8304191830 then -- Lobby
         writefile(FileName..tostring(Player.UserId) .. ".lua", HttpService:JSONEncode(Settings))
     end
 
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local Character = Player.Character
+            local Humanoid = Character.Humanoid
+
+            Character:SetPrimaryPartCFrame(CFrame.new(Mouse.Hit.Position) * CFrame.new(0, Humanoid.HipHeight, 0))
+        end
+    end)
+
     function UpgradeData(UnitName)
         print(UnitName)
         UnitName = string.lower(UnitName)
@@ -220,6 +232,33 @@ if game.PlaceId == 8304191830 then -- Lobby
         end
 
         return 1
+    end
+
+    function GetUnitInfo(UnitName)
+        UnitName = string.lower(UnitName)
+        for i, Info in pairs(UnitsInfo) do
+            if i == UnitName then
+                return Info
+            end
+        end
+
+        for i, Module in pairs(UnitsInfos) do
+            local Info = require(Module)
+
+            for UnitsName, UnitInfo in pairs(Info) do
+                if UnitsName == UnitName then
+                    return UnitInfo
+                end
+            end
+        end
+
+        for i,Info in pairs(MarinefordInfo) do
+            if i == UnitName then
+                return Info
+            end
+        end
+
+        return 
     end
 
     function MakeList(num)
