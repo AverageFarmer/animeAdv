@@ -786,7 +786,7 @@ elseif game.PlaceId == 8349889591 then
             if not v:FindFirstChild("_stats") or v.Name == "aot_generic" then continue end
             if v._stats.player.Value == Player then
                 ClientToServer:WaitForChild("sell_unit_ingame"):InvokeServer(v)
-                task.wait(.3)
+                task.wait(.1)
             end
         end
     end
