@@ -223,11 +223,8 @@ if game.PlaceId == 8304191830 then -- Lobby
                 local CanSummon = game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_random_fighter:InvokeServer("dbz_fighter", open)
                 if not CanSummon then
                     auto:Set(false)
-                else
-                    task.wait(3)
-                    mouse1click()
                 end
-                task.wait()
+                task.wait(3)
             until not Settings.AutoSummon.Enabled
         end
     end)
@@ -380,7 +377,6 @@ if game.PlaceId == 8304191830 then -- Lobby
             --equipped_slot
             for _, v in pairs(allUnits) do
                 local Info = GetUnitInfo(v.unit_id)
-                print(v.shiny)
                 if v.xp ~= 0 then continue end
                 if Info.limited then continue end
                 if DeleteRarityCheck(Info.rarity) and not v.equipped_slot then
