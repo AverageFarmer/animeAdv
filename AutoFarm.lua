@@ -331,7 +331,7 @@ if game.PlaceId == 8304191830 then -- Lobby
 
                 if UpgradeDropHolder[i] and newUnit ~= "None"  then
                     
-                    UpgradeDropHolder[i]:Set(UnitData)
+                    UpgradeDropHolder[i]:Set(#UnitData.upgrades)
                     UpgradeDropHolder[i]:Refresh(MakeList(#UnitData.upgrades), true)
 
                     PlacementDropHolder[i]:Set(Spawn_Cap)
