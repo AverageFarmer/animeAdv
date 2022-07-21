@@ -244,11 +244,6 @@ if game.PlaceId == 8304191830 then -- Lobby
         Save()
     end)
 
-    AutoDelete:Toggle("KeepShiny", Settings.AutoDelete.KeepShiny, "KeepShiny", function(bool)
-        Settings.AutoDelete.KeepShiny = bool
-        Save()
-    end)
-
     AutoDelete:MultiDropdown("Rarities", Rarities, Settings.AutoDelete.Rarities, "Rarities", function(AddedRarities)
         Settings.AutoDelete.Rarities = AddedRarities
         Save()
@@ -259,7 +254,6 @@ if game.PlaceId == 8304191830 then -- Lobby
             Player.Character:SetPrimaryPartCFrame(Position)
         end)
     end
-
     
     function GetPlayersLevel()
         local exp = Player._stats.player_xp.Value
@@ -366,8 +360,6 @@ if game.PlaceId == 8304191830 then -- Lobby
         return false
     end
 
-
-    
     
     
     function AutoDelete()
