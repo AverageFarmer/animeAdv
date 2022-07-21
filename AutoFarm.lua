@@ -100,6 +100,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         "Normal",
         "Hard"
     }
+    local ctrl = false
 
     local UpgradeDropHolder = {
 
@@ -170,11 +171,21 @@ if game.PlaceId == 8304191830 then -- Lobby
 
 
     UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and ctrl then
             local Character = Player.Character
             local Humanoid = Character.Humanoid
 
             Character:SetPrimaryPartCFrame(CFrame.new(Mouse.Hit.Position) * CFrame.new(0, Humanoid.HipHeight, 0))
+        end
+
+        if input.KeyCode == Enum.KeyCode.LeftControl then
+            ctrl = true
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input, gameProcessedEvent)
+        if input.KeyCode == Enum.KeyCode.LeftControl then
+            ctrl = false
         end
     end)
 
