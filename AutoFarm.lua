@@ -228,6 +228,7 @@ if game.PlaceId == 8304191830 then -- Lobby
             repeat
                 local open = (Settings.AutoSummon.x10 and "gems10") or "gems"
                 local CanSummon = game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_random_fighter:InvokeServer("dbz_fighter", open)
+                print(CanSummon)
                 if not CanSummon then
                     auto:Set(false)
                 end
