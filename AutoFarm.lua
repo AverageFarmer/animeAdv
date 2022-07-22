@@ -270,7 +270,7 @@ if game.PlaceId == 8304191830 then -- Lobby
             local Character = Player.Character
             local Humanoid = Character.Humanoid
             
-            Character:SetPrimaryPartCFrame(CFrame.new(Mouse.Hit.Position) * CFrame.new(0, Humanoid.HipHeight * 2, 0))
+            Character:SetPrimaryPartCFrame(CFrame.new(Mouse.Hit.Position) * CFrame.new(0, 3, 0))
         end
         
         if input.KeyCode == Enum.KeyCode.LeftControl then
