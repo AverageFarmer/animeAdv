@@ -851,6 +851,26 @@ elseif game.PlaceId == 8349889591 then
         TeleportService:Teleport(8304191830)
     end
 
+    local function localTeleportWithRetry(placeid, retryTime)
+        local connection
+        connection = TeleportService.TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
+            if player == Player then
+                print("Teleport failed, TeleportResult: "..teleportResult.Name)
+                -- check the teleportResult to ensure it is appropriate to retry
+                if teleportResult == Enum.TeleportResult.GameEnded or teleportResult == Enum.TeleportResult.Flooded or teleportResult == Enum.TeleportResult.Failure then
+                    game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
+                    print("Teleportfailed L")
+                    task.delay(retryTime, function()
+                        print("Reattempting teleport")
+                        TeleportService:Teleport(placeid)
+                    end)
+                end
+            end
+        end)
+    end
+
+    localTeleportWithRetry(8304191830, 5)
+
     task.wait(10)
     start()
 end
