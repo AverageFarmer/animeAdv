@@ -88,7 +88,7 @@ function ChangeSetting(SettingName, Value)
 end
 
 function GetUnitInfo(UnitName)
-    if not UnitName then return end
+    if not UnitName or UnitName == "None" then return end
     for i, Info in pairs(UnitsInfo) do
         if i == UnitName then
             return Info
@@ -323,31 +323,32 @@ if game.PlaceId == 8304191830 then -- Lobby
         for i = 1, MaxSlots do
             local CurrentUnit = Settings.Units[i] or "None"
             local UnitName = (CurrentUnit ~= "None" and  string.split(Settings.Units[i], ":")[2]) or nil
-            local UnitData = (GetUnitInfo(UnitName))
-            local Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 1)
-            
-            UnitSettings:Label("Unit#" .. tostring(i), Color3.new(1, 0, 0))
+            local UnitData = GetUnitInfo(UnitName)
+            local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
+
+            UnitSettings:Label("Unit#" .. tostring(i), Color3.new(0.678431, 0.905882, 0.454901))
             
             UnitSettings:Dropdown("Unit", pets, CurrentUnit, "Unit"..tostring(i), function(newUnit)
+                CurrentUnit = newUnit
+                UnitName = (CurrentUnit ~= "None" and  string.split(newUnit, ":")[2]) or nil
                 UnitData = GetUnitInfo(UnitName)
-                CurrentUnit = newUnit or "None"
-                UnitName = (CurrentUnit ~= "None" and  string.split(CurrentUnit, ":")[2]) or nil
-                Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 1)
+                Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 0)
 
                 Settings.Units[i] = newUnit
                 Save()
 
-                if UpgradeDropHolder[i] and newUnit ~= "None"  then
+                if UpgradeDropHolder[i] then
+                    local UpgradeNum = (UnitData and #UnitData.upgrade) or 0
                     
-                    UpgradeDropHolder[i]:Set(#UnitData.upgrades)
-                    UpgradeDropHolder[i]:Refresh(MakeList(#UnitData.upgrades), true)
+                    UpgradeDropHolder[i]:Set(UpgradeNum)
+                    UpgradeDropHolder[i]:Refresh(MakeList(UpgradeNum), true)
 
                     PlacementDropHolder[i]:Set(Spawn_Cap)
                     PlacementDropHolder[i]:Refresh(MakeList(Spawn_Cap), true)
                 end
             end)
 
-            UpgradeDropHolder[i] = UnitSettings:Dropdown("Upgrade",(CurrentUnit ~= "None" and MakeList(#UnitData.upgrade)) or {}, Settings._Upgrades[i] or 1, "Upgrade"..tostring(i), function(newUnit)
+            UpgradeDropHolder[i] = UnitSettings:Dropdown("Upgrade",(UnitData and MakeList(#UnitData.upgrade)) or {}, Settings._Upgrades[i] or 1, "Upgrade"..tostring(i), function(newUnit)
                 Settings._Upgrades[i] = newUnit
                 Save()
             end)
