@@ -67,6 +67,7 @@ local Settings = {
     },
 }
 
+
 local vu = game:GetService("VirtualUser")
 
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
@@ -332,13 +333,13 @@ if game.PlaceId == 8304191830 then -- Lobby
                 CurrentUnit = newUnit
                 UnitName = (CurrentUnit ~= "None" and  string.split(newUnit, ":")[2]) or nil
                 UnitData = GetUnitInfo(UnitName)
-                Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 0)
+                Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 3)
 
                 Settings.Units[i] = newUnit
                 Save()
 
                 if UpgradeDropHolder[i] then
-                    local UpgradeNum = (UnitData and #UnitData.upgrade) or 0
+                    local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
                     
                     UpgradeDropHolder[i]:Set(UpgradeNum)
                     UpgradeDropHolder[i]:Refresh(MakeList(UpgradeNum), true)
@@ -369,7 +370,6 @@ if game.PlaceId == 8304191830 then -- Lobby
         return false
     end
 
-    
     
     function AutoDelete()
         if Settings.AutoDelete.Enabled then
