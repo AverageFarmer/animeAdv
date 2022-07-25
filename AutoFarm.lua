@@ -52,10 +52,13 @@ local Settings = {
     SpawnCaps = {},
     AutoBuy = {"summon_ticket"},
 
+    AntiAFK = false,
+
     AutoDelete = {
         Enabled = false, 
         Rarities = {"Rare"}, 
-        KeepShiny = true
+        KeepShiny = true,
+        KeepTraits = true,
     },
 
     AutoSummon = {
@@ -70,15 +73,19 @@ local Settings = {
 
 local vu = game:GetService("VirtualUser")
 
-game:GetService("Players").LocalPlayer.Idled:Connect(function()
-	vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-	task.wait(.1)
-	vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
+if Settings.AntiAFK then
+    game:GetService("Players").LocalPlayer.Idled:Connect(function()
+        vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+        task.wait(.1)
+        vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    end)
+end
 
 for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
     Settings[i] = v
 end
+
+Settings.AutoDelete.Enabled = false
 
 syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/animeAdv/main/AutoFarm.lua"))
 
@@ -147,7 +154,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         "3",
         "4",
         "5",
-        "6"
+        "6",
     }
     
     local Difficulties = {
@@ -189,7 +196,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         -- AutoDelete > Toggle
         -- KeepShiny > Toggle
         -- AutoDeleteRarity > MultiDropdown  (Everything but mythic+)
-    ]]
+    --]]
     
     MapSection:Dropdown("Map", Maps, Settings.Map, "MapDrop", function(NewMap)
         ChangeSetting("Map", NewMap)
@@ -248,13 +255,23 @@ if game.PlaceId == 8304191830 then -- Lobby
         Save()
     end)
 
-    AutoDelete:Toggle("AutoDelete", Settings.AutoDelete.Enabled, "AutoDelete", function(bool)
+    local URMOM
+    URMOM = AutoDelete:Toggle("AutoDelete", Settings.AutoDelete.Enabled, "AutoDelete", function(bool)
         Settings.AutoDelete.Enabled = bool
+        Save()
+    end)
+
+    AutoDelete:Toggle("KeepTraits", Settings.AutoDelete.KeepTraits, "KeepTraits", function(bool)
+        Settings.AutoDelete.KeepTraits = bool
+        URMOM:Set(false) -- whatever u wanna set it to
+        Settings.AutoDelete.Enabled = false
         Save()
     end)
 
     AutoDelete:MultiDropdown("Rarities", Rarities, Settings.AutoDelete.Rarities, "Rarities", function(AddedRarities)
         Settings.AutoDelete.Rarities = AddedRarities
+        URMOM:Set(false)
+        Settings.AutoDelete.Enabled = false
         Save()
     end)
 
@@ -379,7 +396,8 @@ if game.PlaceId == 8304191830 then -- Lobby
             for _, v in pairs(allUnits) do
                 local Info = GetUnitInfo(v.unit_id)
                 if v.xp ~= 0 then continue end
-                if Info.limited then continue end
+                if Info.limited or Info.hide_from_banner then continue end
+                if Settings.AutoDelete.KeepTraits and #v.traits > 0 then continue end
                 if DeleteRarityCheck(Info.rarity) and not v.equipped_slot then
                     if not Settings.AutoDelete.KeepShiny then
                         table.insert(UnitsToDelete, v.uuid)
