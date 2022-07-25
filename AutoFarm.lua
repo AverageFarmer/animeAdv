@@ -319,10 +319,10 @@ if game.PlaceId == 8304191830 then -- Lobby
     end
     
     function GetUnits()
-        task.wait(3)
         repeat
             task.wait()
         until EndpointsClient.session.collection
+        task.wait(3)
         local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
         local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
         local pets = {}
@@ -430,7 +430,7 @@ if game.PlaceId == 8304191830 then -- Lobby
 
     function FindOpenLobby()
         for i,v in pairs(Lobbies:GetChildren()) do
-            if not v.Owner.Value then
+            if not v.Owner.Value and not v.Active.Value and not v.Locked.Value then
                 return v.Name
             end
         end
@@ -487,6 +487,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         Create()
         task.wait(2)
         start2()
+        task.wait(10)
         LastCheck()
     end
 
@@ -596,11 +597,8 @@ elseif game.PlaceId == 8349889591 then
         until false
     end)
 
-    Player.OnTeleport:Connect(function(State)
-        if State == Enum.TeleportState.Started then
-            syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/AutoFarm.lua"))
-        end
-    end)
+
+    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/AutoFarm.lua"))
 
     local FarmUnits = {
         
@@ -743,7 +741,11 @@ elseif game.PlaceId == 8349889591 then
             local uuid = split[1]
             local UnitName = split[2]
 
-            FarmUnits[UnitName] = uuid
+
+            FarmUnits[i] = {
+                ["Name"] = UnitName, 
+                ["uuid"] = uuid,
+            };
         end
     end
 
@@ -759,13 +761,14 @@ elseif game.PlaceId == 8349889591 then
         end
     end
 
-    function spawnUnit(unit)
-        local Cap = GetSpawnCap(unit)
+    function spawnUnit(Index)
+        local UnitName = FarmUnits[Index]["Name"]
+        local Cap = GetSpawnCap(UnitName)
         local Type = "Ground"
-        if Log[unit] and Log[unit] == Cap then return end
+        if Log[Index] and Log[Index] == Cap then return end
         if not Maps[Settings.Map][Type][SpawnNum] then return end
         local args = {
-            [1] = FarmUnits[unit],
+            [1] = FarmUnits[Index]["uuid"],
             [2] = Maps[Settings.Map][Type][SpawnNum]
         }
         
@@ -777,10 +780,10 @@ elseif game.PlaceId == 8349889591 then
         until placed
 
         if placed then
-            if not Log[unit] then
-                Log[unit] = 1
+            if not Log[Index] then
+                Log[Index] = 1
             else
-                Log[unit] += 1
+                Log[Index] += 1
             end
 
             SpawnNum += 1
@@ -837,7 +840,8 @@ elseif game.PlaceId == 8349889591 then
             ClientToServer:WaitForChild("vote_start"):InvokeServer()
         end)
 
-        for Name, v in pairs(FarmUnits) do
+        for Index, Info in pairs(FarmUnits) do
+            local Name = Info["Name"]
             print(Name)
             local Cap = GetSpawnCap(Name) -- Spawn Cap
             for i = 1, Cap do
