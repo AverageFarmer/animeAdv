@@ -846,7 +846,7 @@ elseif game.PlaceId == 8349889591 then
             local Cap = GetSpawnCap(Name) -- Spawn Cap
             for i = 1, Cap do
                 task.wait(1)
-                spawnUnit(Name)
+                spawnUnit(Index)
             end
         end
 
