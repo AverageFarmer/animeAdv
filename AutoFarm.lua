@@ -331,7 +331,7 @@ if game.PlaceId == 8304191830 then -- Lobby
     function GetUnits()
         repeat
             task.wait()
-        until EndpointsClient.session.collection
+        until EndpointsClient.session
         task.wait(3)
         local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
         local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
