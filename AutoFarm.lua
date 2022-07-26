@@ -73,13 +73,13 @@ local Settings = {
 
 local vu = game:GetService("VirtualUser")
 
-if Settings.AntiAFK then
-    game:GetService("Players").LocalPlayer.Idled:Connect(function()
+game:GetService("Players").LocalPlayer.Idled:Connect(function()
+    if Settings.AntiAFK then
         vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
         task.wait(.1)
         vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    end)
-end
+    end
+end)
 
 for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
     Settings[i] = v
@@ -192,6 +192,11 @@ if game.PlaceId == 8304191830 then -- Lobby
     local AutoSummon = SummonSettings:Section("AutoSummon")
     local AutoDelete = SummonSettings:Section("AutoDelete")
 
+    local Misc = window:Tab("Misc")
+    local MiscSection = Misc:Section("Misc")
+
+
+
     --[[
         -- AutoDelete > Toggle
         -- KeepShiny > Toggle
@@ -272,6 +277,11 @@ if game.PlaceId == 8304191830 then -- Lobby
         Settings.AutoDelete.Rarities = AddedRarities
         URMOM:Set(false)
         Settings.AutoDelete.Enabled = false
+        Save()
+    end)
+
+    MiscSection:Toggle("Anti Afk", Settings.AntiAFK, "AntiAfk", function(bool)
+        Settings.AntiAFK = bool
         Save()
     end)
 
@@ -531,6 +541,9 @@ if game.PlaceId == 8304191830 then -- Lobby
     end
 
     localTeleportWithRetry(game.PlaceId, 5)
+
+    --claim quest - nvm lol
+
 
     task.spawn(function()
         GetUnits()
