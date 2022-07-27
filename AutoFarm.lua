@@ -748,7 +748,7 @@ elseif game.PlaceId == 8349889591 then
 
     function addUnits()
         for i,v in pairs(Settings.Units) do
-            if i >= 5 then return end
+            if i == 6 then return end
             if v == "None" then continue end
             local split = string.split(v, ":") -- uuid:name
             local uuid = split[1]
