@@ -601,6 +601,10 @@ elseif game.PlaceId == 8349889591 then
     end)
 
     if Settings.AntiAFK then
+        repeat
+            task.wait()
+        until Player.Character
+        task.wait(2)
         Player.Character.Parent = game.Lighting
     end
 
