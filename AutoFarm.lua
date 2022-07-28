@@ -71,16 +71,6 @@ local Settings = {
 }
 
 
-local vu = game:GetService("VirtualUser")
-
-game:GetService("Players").LocalPlayer.Idled:Connect(function()
-    if Settings.AntiAFK then
-        vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-        task.wait(.1)
-        vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    end
-end)
-
 for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
     Settings[i] = v
 end
@@ -610,6 +600,9 @@ elseif game.PlaceId == 8349889591 then
         until false
     end)
 
+    if Settings.AntiAFK then
+        Player.Character.Parent = game.Lighting
+    end
 
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/AutoFarm.lua"))
 
