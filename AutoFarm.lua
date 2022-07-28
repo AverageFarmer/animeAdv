@@ -1,6 +1,9 @@
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
+local vu = game:GetService("VirtualUser")
+
 
 if _G.Loaded then return end
 
@@ -53,6 +56,7 @@ local Settings = {
     AutoBuy = {"summon_ticket"},
 
     AntiAFK = false,
+    AntiAFKv2 = false,
 
     AutoDelete = {
         Enabled = false, 
@@ -78,6 +82,14 @@ end
 Settings.AutoDelete.Enabled = false
 
 syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/animeAdv/main/AutoFarm.lua"))
+
+Player.Idled:Connect(function(time)
+    if Settings.AntiAFKv2 then
+        vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+        task.wait(.1)
+        vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    end
+end)
 
 function ChangeSetting(SettingName, Value)
     Settings[SettingName] = Value
@@ -121,18 +133,9 @@ end
 if game.PlaceId == 8304191830 then -- Lobby
     local Lobbies = game:GetService("Workspace")["_LOBBIES"].Story
 
-    local TeleportAreas = {
-        ["Challenges"] = CFrame.new(82.5503769, 194.505249, -373.466858),
-        ["Leaderboard"] = CFrame.new(384.928, 195.666, -657.437),
-        ["Summon"] = CFrame.new(252.503937, 196.631577, -769.12146),
-        ["Traits"] = CFrame.new(418.272, 195.333, -531.499),
-        ["Evolve"] = CFrame.new(561.148, 192.849, -527.637),
-        ["Play"] = CFrame.new(47.8356, 196.307, -525.739)
-    }
-
     local Maps = {
         "namek",
-        --"aot",
+        "aot",
         --"demonslayer",
         --"naruto",
         "marineford"
@@ -165,7 +168,7 @@ if game.PlaceId == 8304191830 then -- Lobby
     local PlacementDropHolder = {}
     
     local window = SolarisLib:New({
-        Name = "DizFarm Version:1.0d",
+        Name = "DizFarm Version:1.0e",
         FolderToSave = "DizNuts"
     })
     local SettingsWindow = window:Tab("Settings") -- Creates the window
@@ -175,16 +178,12 @@ if game.PlaceId == 8304191830 then -- Lobby
     local UnitSettings = SettingsWindow:Section("UnitSettings")
     local ShopSettings = SettingsWindow:Section("ShopSettings")
     
-    local TeleportWindow = window:Tab("Teleports") -- Creates the window
-    local Areas = TeleportWindow:Section("Areas")
-    
     local SummonSettings = window:Tab("SummonSettings") -- Creates the window
     local AutoSummon = SummonSettings:Section("AutoSummon")
     local AutoDelete = SummonSettings:Section("AutoDelete")
 
     local Misc = window:Tab("Misc")
     local MiscSection = Misc:Section("Misc")
-
 
 
     --[[
@@ -270,17 +269,25 @@ if game.PlaceId == 8304191830 then -- Lobby
         Save()
     end)
 
-    MiscSection:Toggle("Anti Afk", Settings.AntiAFK, "AntiAfk", function(bool)
+    local Anti_Afk
+    local Anti_Afkv2
+    Anti_Afk = MiscSection:Toggle("Anti Afk", Settings.AntiAFK, "AntiAfk", function(bool)
         Settings.AntiAFK = bool
+        if bool and Anti_Afkv2 then
+            Anti_Afkv2:Set(false)
+        end
+        Save()
+    end)
+    
+    Anti_Afkv2 = MiscSection:Toggle("Anti Afk", Settings.AntiAFK, "AntiAfk", function(bool)
+        Settings.AntiAFK = bool
+
+        if bool and Anti_Afk then
+            Anti_Afk:Set(false)
+        end
         Save()
     end)
 
-    for Area, Position in pairs(TeleportAreas) do
-        Areas:Button(Area, function()
-            Player.Character:SetPrimaryPartCFrame(Position)
-        end)
-    end
-    
     function GetPlayersLevel()
         local exp = Player._stats.player_xp.Value
         
@@ -477,6 +484,8 @@ if game.PlaceId == 8304191830 then -- Lobby
         end
 
         TeleportToMap()
+
+        return true
     end
 
     function TeleportToMap()
@@ -487,8 +496,12 @@ if game.PlaceId == 8304191830 then -- Lobby
         Create()
         task.wait(2)
         start2()
-        task.wait(10)
-        LastCheck()
+        task.wait(1)
+
+        repeat
+            LastCheck()
+            task.wait(3)
+        until false
     end
 
     function teleport()
@@ -513,6 +526,8 @@ if game.PlaceId == 8304191830 then -- Lobby
                         print("Reattempting teleport")
                         TeleportToMap()
                     end)
+                elseif Enum.TeleportResult.Unauthorized then
+                    TeleportService:Teleport(game.PlaceId)
                 end
             end
         end)
@@ -608,8 +623,6 @@ elseif game.PlaceId == 8349889591 then
         Player.Character.Parent = game.Lighting
     end
 
-    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/AutoFarm.lua"))
-
     local FarmUnits = {
         
     }
@@ -644,7 +657,23 @@ elseif game.PlaceId == 8349889591 then
                 CFrame.new(-2951.92, 95.6987, -716.304)
             }
         },
-        ["aot"] = CFrame.new(-3011.77393, 35.0377998, -684.094604),
+        ["aot"] = {
+            ["Ground"] = {
+                CFrame.new(-3011.31, 35.0219, -684.4),
+                CFrame.new(-3010.96, 35.0219, -680.458),
+                CFrame.new(-3014.6, 35.0219, -683.096),
+                CFrame.new(-3014.27, 35.0219, -680.199),
+                CFrame.new(-3016.96, 35.6601, -680.319),
+                CFrame.new(-3017.01, 35.0219, -683.823),
+                CFrame.new(-3019.64, 35.6601, -683.609),
+                CFrame.new(-3020.02, 35.6601, -680.326),
+                CFrame.new(-3022.27, 35.0219, -683.67),
+                CFrame.new(-3022.59, 35.6601, -681.008),
+                CFrame.new(-3026.02, 35.0219, -681.037),
+                CFrame.new(-3026.02, 35.0219, -681.037),
+                CFrame.new(-3026.5, 35.0219, -684.633)
+            }
+        },
         ["demonslayer"] = CFrame.new(-2876.57, 35.643, -135.408),
         ["naruto"] = CFrame.new(-890.466, 26.577, 313.911),
         ["marineford"] = {
@@ -694,11 +723,11 @@ elseif game.PlaceId == 8349889591 then
     end
 
     function SendWebhook()
-        task.wait()
+        task.wait(.5)
         local data = {
             ["embeds"] = {{
                 ["author"] = {
-                    ["name"] = Player.DisplayName .. ": Lv " .. tostring(GetPlayersLevel()),
+                    ["name"] = string.format("%s @%s: Lv %s", Player.DisplayName, Player.Name, tostring(GetPlayersLevel())),
                     ["icon_url"] = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. Player.UserId .. "&width=420&height=420&format=png"
                 },
         
@@ -724,7 +753,7 @@ elseif game.PlaceId == 8349889591 then
                     },
 
                     {
-                        ["name"] = "TimeFinished:",
+                        ["name"] = "Time Finished:",
                         ["value"] = string.match(PlayerGui.ResultsUI.Holder.Middle.Timer.Text, "%d+%p%d+"),
                         ["inline"] = true
                     },
