@@ -279,7 +279,7 @@ if game.PlaceId == 8304191830 then -- Lobby
         Save()
     end)
     
-    Anti_Afkv2 = MiscSection:Toggle("Anti Afk", Settings.AntiAFK, "AntiAfk", function(bool)
+    Anti_Afkv2 = MiscSection:Toggle("Anti Afkv2", Settings.AntiAFK, "AntiAfk", function(bool)
         Settings.AntiAFK = bool
 
         if bool and Anti_Afk then
