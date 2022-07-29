@@ -503,6 +503,8 @@ function Luxt1.CreateWindow(libName, logoId)
             end
 
                 function ItemHandling:Toggle(toggInfo, callback)
+                    local element = {}
+
                     local ToggleFrame = Instance.new("Frame")
                     local toggleFrame = Instance.new("Frame")
                     local UICorner = Instance.new("UICorner")
@@ -573,25 +575,29 @@ function Luxt1.CreateWindow(libName, logoId)
 
                     local on = false
                     local togDe = false
-                    checkBtn.MouseButton1Click:Connect(function()
+
+                    local function toggleUI(value)
                         if not togDe then
-                                togDe = true
-                                on = not on
-                                 callback(on) 
-                                if on then
-                                    checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(153, 255, 238)
-                                    checkBtn.ImageColor3 = Color3.fromRGB(153, 255, 238)
-                                    checkBtn.ImageRectOffset = Vector2.new(4, 836)
-                                    checkBtn.ImageRectSize = Vector2.new(48,48)
-                                else
-                                    checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(97, 97, 97)
-                                    checkBtn.ImageColor3 = Color3.fromRGB(97, 97, 97)
-                                    checkBtn.ImageRectOffset = Vector2.new(940, 784)
-                                    checkBtn.ImageRectSize = Vector2.new(48,48)
-                                end
-                                wait(1)
-                                togDe = false
+                            togDe = true
+                            on = value or not on
+                            callback(on) 
+                            if on then
+                                checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(153, 255, 238)
+                                checkBtn.ImageColor3 = Color3.fromRGB(153, 255, 238)
+                                checkBtn.ImageRectOffset = Vector2.new(4, 836)
+                                checkBtn.ImageRectSize = Vector2.new(48,48)
+                            else
+                                checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(97, 97, 97)
+                                checkBtn.ImageColor3 = Color3.fromRGB(97, 97, 97)
+                                checkBtn.ImageRectOffset = Vector2.new(940, 784)
+                                checkBtn.ImageRectSize = Vector2.new(48,48)
                             end
+                            wait(.5)
+                            togDe = false
+                        end
+                    end
+                    checkBtn.MouseButton1Click:Connect(function()
+                        toggleUI()
                     end)
 
                     checkBtn.MouseButton1Up:Connect(function()
@@ -601,6 +607,12 @@ function Luxt1.CreateWindow(libName, logoId)
                     checkBtn.MouseButton1Down:Connect(function()
                         checkBtn.Parent:TweenSize(UDim2.new(0, 359,0, 30), "InOut", "Quint", 0.18, true)
                     end)
+
+                    function element:Set(value)
+                        toggleUI(value)
+                    end
+
+                    return element
                 end
 
                     function ItemHandling:KeyBind(keyInfo, first, callback)
@@ -1009,6 +1021,7 @@ function Luxt1.CreateWindow(libName, logoId)
                             end
 
                             function ItemHandling:Label(labelInfo)
+                                local element = {}
                                 local TextLabelFrame = Instance.new("Frame")
                                 local UIListLayout = Instance.new("UIListLayout")
                                 local TextLabel = Instance.new("TextLabel")
@@ -1037,6 +1050,12 @@ function Luxt1.CreateWindow(libName, logoId)
 
                                 UICorner.CornerRadius = UDim.new(0, 5)
                                 UICorner.Parent = TextLabel
+                                
+                                function element:Set(text)
+                                    TextLabel.Text = text
+                                end
+
+                                return element
                             end
 
                             function ItemHandling:Credit(creditWho)
@@ -1267,6 +1286,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                             v:Destroy()
                                         end
                                     end
+                                    DropYSize = 36
                                     task.wait()
                                     MakeOptions(options)
                                 end
@@ -1275,6 +1295,7 @@ function Luxt1.CreateWindow(libName, logoId)
                             end
 
                             function ItemHandling:MultiDropDown(dropInfo, list, callback)
+                                local element = {}
                                 callback = callback or function() end
                                 list = list or {}
                                 dropInfo = dropInfo or {}
@@ -1394,91 +1415,114 @@ function Luxt1.CreateWindow(libName, logoId)
                                 UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
                                 UIListLayout_3.VerticalAlignment = Enum.VerticalAlignment.Center
 
-                                for i,v in next, list do
-                                    local optionBtnFrame = Instance.new("Frame")
-                                    local optionBtn1 = Instance.new("TextButton")
-                                    local UICorner_3 = Instance.new("UICorner")
-
-                                    optionBtnFrame.Name = "optionBtnFrame"
-                                    optionBtnFrame.Parent = dropdownFrame
-                                    optionBtnFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                                    optionBtnFrame.BackgroundTransparency = 1.000
-                                    optionBtnFrame.BorderSizePixel = 0
-                                    optionBtnFrame.Size = UDim2.new(0, 339, 0, 34)
-
-                                    optionBtn1.Name = "optionBtn1"
-                                    optionBtn1.Parent = optionBtnFrame
-                                    optionBtn1.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
-                                    optionBtn1.Size = UDim2.new(0, 339, 0, 34)
-                                    optionBtn1.ZIndex = 2
-                                    optionBtn1.AutoButtonColor = false
-                                    optionBtn1.Font = Enum.Font.GothamSemibold
-                                    optionBtn1.Text = "  "..v
-                                    optionBtn1.TextColor3 = Color3.fromRGB(120, 200, 187)
-                                    optionBtn1.TextSize = 14.000
-                                    optionBtn1.TextXAlignment = Enum.TextXAlignment.Left
-
-                                    UICorner_3.CornerRadius = UDim.new(0, 3)
-                                    UICorner_3.Parent = optionBtn1
-
-                                    DropYSize = DropYSize + 40
-                                    optionBtn1.MouseButton1Click:Connect(function()
-                                        if table.find(dropInfo, v) then
-                                            local index = table.find(dropInfo, v)
-
-                                            dropInfo[index] = nil
-
-                                            local fakeList = {}
-                                            for i,v in pairs(dropInfo) do
-                                                table.insert(fakeList, v)
+                                local function MakeOptions(List)
+                                    for i,v in next, List do
+                                        local optionBtnFrame = Instance.new("Frame")
+                                        local optionBtn1 = Instance.new("TextButton")
+                                        local UICorner_3 = Instance.new("UICorner")
+    
+                                        optionBtnFrame.Name = "optionBtnFrame"
+                                        optionBtnFrame.Parent = dropdownFrame
+                                        optionBtnFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                                        optionBtnFrame.BackgroundTransparency = 1.000
+                                        optionBtnFrame.BorderSizePixel = 0
+                                        optionBtnFrame.Size = UDim2.new(0, 339, 0, 34)
+    
+                                        optionBtn1.Name = "optionBtn1"
+                                        optionBtn1.Parent = optionBtnFrame
+                                        optionBtn1.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
+                                        optionBtn1.Size = UDim2.new(0, 339, 0, 34)
+                                        optionBtn1.ZIndex = 2
+                                        optionBtn1.AutoButtonColor = false
+                                        optionBtn1.Font = Enum.Font.GothamSemibold
+                                        optionBtn1.Text = "  "..v
+                                        optionBtn1.TextColor3 = Color3.fromRGB(120, 200, 187)
+                                        optionBtn1.TextSize = 14.000
+                                        optionBtn1.TextXAlignment = Enum.TextXAlignment.Left
+    
+                                        UICorner_3.CornerRadius = UDim.new(0, 3)
+                                        UICorner_3.Parent = optionBtn1
+    
+                                        DropYSize = DropYSize + 40
+                                        optionBtn1.MouseButton1Click:Connect(function()
+                                            if table.find(dropInfo, v) then
+                                                local index = table.find(dropInfo, v)
+    
+                                                dropInfo[index] = nil
+    
+                                                local fakeList = {}
+                                                for i,v in pairs(dropInfo) do
+                                                    table.insert(fakeList, v)
+                                                end
+    
+                                                dropInfo = fakeList
                                             end
-
-                                            dropInfo = fakeList
-                                        end
-                                        ListToText()
-                                        callback(v)
-                                        dropdownItem1.Text = droptext
-                                        DropDownFrame:TweenSize(UDim2.new(0, 365, 0, 36), "In", "Quint", 0.10)
-                                        wait()
-                                        isDropped = false
-                                        wait(0.10)
-                                        sectionFrame:TweenSize(UDim2.new(1,0, 0, sectionInnerList.AbsoluteContentSize.Y + 5), "In", "Quint", 0.10)
-                                        wait(0.10)
-                                        UpdateSize()
-                                        game.TweenService:Create(expand_more, TweenInfo.new(0.10, Enum.EasingStyle.Quad, Enum.EasingDirection.In),{
-                                            Rotation = 0
-                                        }):Play()
-                                    end)
-                                    optionBtn1.MouseButton1Down:Connect(function()
-                                        optionBtn1:TweenSize(UDim2.new(0, 335,0, 30), "InOut", "Quint", 0.12, true)
-                                        game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
-                                            BackgroundColor3 = Color3.fromRGB(21,21,21),
-                                            TextColor3 = Color3.fromRGB(180, 180, 180)
-                                        }):Play()
-                                    end)
-                                    
-                                    optionBtn1.MouseButton1Up:Connect(function()
-                                        optionBtn1:TweenSize(UDim2.new(0, 339,0, 34), "InOut", "Quint", 0.12, true)
-                                        game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
-                                            BackgroundColor3 = Color3.fromRGB(101, 168, 157),
-                                            TextColor3 = Color3.fromRGB(0,0,0)
-                                        }):Play()
-                                    end)
-                                    
-                                    optionBtn1.MouseEnter:Connect(function()
-                                        game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
-                                            BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-                                            TextColor3 = Color3.fromRGB(250,250,250)
-                                        }):Play()
-                                    end)
-                                    
-                                    optionBtn1.MouseLeave:Connect(function()
-                                        game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
-                                            BackgroundColor3 = Color3.fromRGB(21, 21, 21),
-                                            TextColor3 = Color3.fromRGB(120, 200, 187)
-                                        }):Play()
-                                    end)
+                                            ListToText()
+                                            callback(v)
+                                            dropdownItem1.Text = droptext
+                                            DropDownFrame:TweenSize(UDim2.new(0, 365, 0, 36), "In", "Quint", 0.10)
+                                            wait()
+                                            isDropped = false
+                                            wait(0.10)
+                                            sectionFrame:TweenSize(UDim2.new(1,0, 0, sectionInnerList.AbsoluteContentSize.Y + 5), "In", "Quint", 0.10)
+                                            wait(0.10)
+                                            UpdateSize()
+                                            game.TweenService:Create(expand_more, TweenInfo.new(0.10, Enum.EasingStyle.Quad, Enum.EasingDirection.In),{
+                                                Rotation = 0
+                                            }):Play()
+                                        end)
+                                        optionBtn1.MouseButton1Down:Connect(function()
+                                            optionBtn1:TweenSize(UDim2.new(0, 335,0, 30), "InOut", "Quint", 0.12, true)
+                                            game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
+                                                BackgroundColor3 = Color3.fromRGB(21,21,21),
+                                                TextColor3 = Color3.fromRGB(180, 180, 180)
+                                            }):Play()
+                                        end)
+                                        
+                                        optionBtn1.MouseButton1Up:Connect(function()
+                                            optionBtn1:TweenSize(UDim2.new(0, 339,0, 34), "InOut", "Quint", 0.12, true)
+                                            game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
+                                                BackgroundColor3 = Color3.fromRGB(101, 168, 157),
+                                                TextColor3 = Color3.fromRGB(0,0,0)
+                                            }):Play()
+                                        end)
+                                        
+                                        optionBtn1.MouseEnter:Connect(function()
+                                            game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
+                                                BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+                                                TextColor3 = Color3.fromRGB(250,250,250)
+                                            }):Play()
+                                        end)
+                                        
+                                        optionBtn1.MouseLeave:Connect(function()
+                                            game.TweenService:Create(optionBtn1, TweenInfo.new(0.18, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),{
+                                                BackgroundColor3 = Color3.fromRGB(21, 21, 21),
+                                                TextColor3 = Color3.fromRGB(120, 200, 187)
+                                            }):Play()
+                                        end)
+                                    end
                                 end
+                                MakeOptions(list)
+
+                                function element:Set(value:table)
+                                    dropInfo = value
+                                    ListToText()
+                                    callback(value)
+                                    dropdownItem1.Text = droptext
+                                end
+
+                                function element:Refesh(options)
+                                    for i, v in pairs(dropdownFrame:GetChildren()) do
+                                        if v.Name == "optionBtnFrame" then
+                                            v:Destroy()
+                                        end
+                                    end
+                                    DropYSize = 36
+                                    task.wait()
+                                    MakeOptions(options)
+                                end
+
+                                return element
                             end
                         
             return ItemHandling
