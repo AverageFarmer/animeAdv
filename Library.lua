@@ -502,7 +502,7 @@ function Luxt1.CreateWindow(libName, logoId)
                 end)
             end
 
-                function ItemHandling:Toggle(toggInfo, callback)
+                function ItemHandling:Toggle(toggInfo, default, callback)
                     local element = {}
 
                     local ToggleFrame = Instance.new("Frame")
@@ -573,7 +573,7 @@ function Luxt1.CreateWindow(libName, logoId)
                     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
                     UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 
-                    local on = false
+                    local on = default or false
                     local togDe = false
 
                     local function toggleUI(value)
@@ -596,6 +596,9 @@ function Luxt1.CreateWindow(libName, logoId)
                             togDe = false
                         end
                     end
+
+                    toggleUI(default)
+
                     checkBtn.MouseButton1Click:Connect(function()
                         toggleUI()
                     end)
@@ -717,13 +720,13 @@ function Luxt1.CreateWindow(libName, logoId)
                         end)
                     end
 
-                        function ItemHandling:TextBox(infbix, textPlace, callback)
+                        function ItemHandling:TextBox(infbix, default, callback)
+                            local element = {}
                             --
                             infbix = infbix or "TextBox"
-                            textPlace = textPlace or "PlaceHolder"
                             callback = callback or function() end
+                            default = default or ""
                             --
-                            local a
                             local TextBoxFrame = Instance.new("Frame")
                             local textboxFrame = Instance.new("Frame")
                             local UICorner = Instance.new("UICorner")
@@ -774,7 +777,6 @@ function Luxt1.CreateWindow(libName, logoId)
                             TextBox.Text = ""
                             TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
                             TextBox.TextSize = 13.000
-                            TextBox.PlaceholderText = textPlace
 
                             UICorner_2.CornerRadius = UDim.new(0, 5)
                             UICorner_2.Parent = TextBox
@@ -809,8 +811,12 @@ function Luxt1.CreateWindow(libName, logoId)
                                 textboxFrame:TweenSize(UDim2.new(0, 359,0, 30), "InOut", "Quint", 0.18, true)
                                 wait(0.18)
                                 textboxFrame:TweenSize(UDim2.new(0, 365,0, 36), "InOut", "Quint", 0.18, true)
-                                TextBox.Text = ""  
                             end)
+
+                            function element:Set(text)
+                                TextBox.Text = text
+                            end
+                            return element
                         end
 
                             function ItemHandling:Slider(slidInfo, minvalue, maxvalue, callback)
@@ -1303,7 +1309,7 @@ function Luxt1.CreateWindow(libName, logoId)
 
                                 local function ListToText()
                                     for i,v in pairs(dropInfo) do
-                                        if #dropInfo == 1 then
+                                        if i == 1 then
                                             droptext = v
                                         else
                                             droptext = droptext .. "," .. v
@@ -1458,7 +1464,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                                 dropInfo = fakeList
                                             end
                                             ListToText()
-                                            callback(v)
+                                            callback(dropInfo)
                                             dropdownItem1.Text = droptext
                                             DropDownFrame:TweenSize(UDim2.new(0, 365, 0, 36), "In", "Quint", 0.10)
                                             wait()
