@@ -520,7 +520,7 @@ function Luxt1.CreateWindow(libName, logoId)
                     --
                     toggInfo = toggInfo or "Toggle"
                     callback = callback or function() end
-                    print("The Default is" .. tostring(default))
+                    print(toggInfo .. tostring(default))
 
                     ToggleFrame.Name = "ToggleFrame"
                     ToggleFrame.Parent = sectionFrame
@@ -577,30 +577,8 @@ function Luxt1.CreateWindow(libName, logoId)
                     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
                     UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 
-                    local on = default or false
                     local togDe = false
 
-                    local function toggleUI(value)
-                        if not togDe then
-                            togDe = true
-                            on = (value ~= nil and value) or not on
-                            callback(on) 
-
-                            if on then
-                                checkBtn.Parent.toggleInfo.TextColor3 = textColor
-                                checkBtn.ImageColor3 = textColor
-                                checkBtn.ImageRectOffset = Vector2.new(4, 836)
-                                checkBtn.ImageRectSize = Vector2.new(48,48)
-                            else
-                                checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(97, 97, 97)
-                                checkBtn.ImageColor3 = Color3.fromRGB(97, 97, 97)
-                                checkBtn.ImageRectOffset = Vector2.new(940, 784)
-                                checkBtn.ImageRectSize = Vector2.new(48,48)
-                            end
-                            wait(.5)
-                            togDe = false
-                        end
-                    end
 
                     toggleUI(default)
 
@@ -617,7 +595,21 @@ function Luxt1.CreateWindow(libName, logoId)
                     end)
 
                     function element:Set(value)
-                        toggleUI(value)
+                        callback(on) 
+
+                        if on then
+                            checkBtn.Parent.toggleInfo.TextColor3 = textColor
+                            checkBtn.ImageColor3 = textColor
+                            checkBtn.ImageRectOffset = Vector2.new(4, 836)
+                            checkBtn.ImageRectSize = Vector2.new(48,48)
+                        else
+                            checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(97, 97, 97)
+                            checkBtn.ImageColor3 = Color3.fromRGB(97, 97, 97)
+                            checkBtn.ImageRectOffset = Vector2.new(940, 784)
+                            checkBtn.ImageRectSize = Vector2.new(48,48)
+                        end
+                        wait(.5)
+                        togDe = false
                     end
 
                     return element
