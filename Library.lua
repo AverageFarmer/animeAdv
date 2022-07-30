@@ -774,7 +774,7 @@ function Luxt1.CreateWindow(libName, logoId)
                             TextBox.ClearTextOnFocus = false
                             TextBox.Font = Enum.Font.GothamSemibold
                             TextBox.PlaceholderColor3 = Color3.fromRGB(24, 24, 24)
-                            TextBox.Text = ""
+                            TextBox.Text = default
                             TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
                             TextBox.TextSize = 13.000
 
