@@ -255,6 +255,8 @@ if game.PlaceId == 8304191830 then
 
     local AutoDeleteSection = SummonTab:Section("AutoDelete")
 
+    local AFKSection = MiscTab:Section("AFK")
+
     local Map = MapSettings:DropDown("Map", Settings.Map, Maps, function(val)
         Settings.Map = val
         Save()
@@ -292,6 +294,7 @@ if game.PlaceId == 8304191830 then
         Settings.AutoDelete.Enabled = val
         Save()
     end)
+
     AutoDeleteSection:Toggle("Keep Traits", Settings.AutoDelete.KeepTraits, function(val)
         Settings.AutoDelete.KeepTraits = val
         Save()
@@ -301,6 +304,16 @@ if game.PlaceId == 8304191830 then
         Settings.AutoDelete.Rarities = val
         URMOM:Set(false)
         Settings.AutoDelete.Enabled = false
+        Save()
+    end)
+
+    AFKSection:Toggle("Anti-AFK", Settings.AntiAFK, function(val)
+        Settings.AntiAFK = val
+        Save()
+    end)
+
+    AFKSection:Toggle("Anti-AFKv2", Settings.AntiAFKv2, function(val)
+        Settings.AntiAFKv2 = val
         Save()
     end)
 
