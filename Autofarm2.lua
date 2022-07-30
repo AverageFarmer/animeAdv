@@ -77,7 +77,7 @@ local Settings = {
     },
 
     AntiAFK = false,
-    AntiAFKv2 = false,
+    AntiAFKv2 = true,
 
     AutoDelete = {
         Enabled = false, 
