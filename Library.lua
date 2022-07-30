@@ -1,6 +1,6 @@
 local Luxt1 = {}
 
-local textColor = Color3.new(0.294117, 0.945098, 0.223529)
+local textColor = Color3.new(0.501960, 0.972549, 0.450980)
 local arrowColor = Color3.new(0.047058, 0.482352, 0)
 
 function Luxt1.CreateWindow(libName, logoId)
@@ -190,7 +190,7 @@ function Luxt1.CreateWindow(libName, logoId)
     usename.ZIndex = 2
     usename.Font = Enum.Font.GothamSemibold
     usename.Text = game.Players.LocalPlayer.Name
-    usename.TextColor3 = Color3.fromRGB(103, 172, 161)
+    usename.TextColor3 = Color3.fromRGB(58, 147, 38)
     usename.TextSize = 12.000
     usename.TextWrapped = true
     usename.TextXAlignment = Enum.TextXAlignment.Left
@@ -584,6 +584,7 @@ function Luxt1.CreateWindow(libName, logoId)
                             togDe = true
                             on = value or not on
                             callback(on) 
+                            print(on)
                             if on then
                                 checkBtn.Parent.toggleInfo.TextColor3 = textColor
                                 checkBtn.ImageColor3 = textColor
