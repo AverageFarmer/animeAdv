@@ -1315,6 +1315,8 @@ function Luxt1.CreateWindow(libName, logoId)
                                             droptext = droptext .. "," .. v
                                         end
                                     end
+
+                                    print(droptext)
                                 end
                                 ListToText()
     
