@@ -1465,7 +1465,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                             end
                                             ListToText()
                                             callback(dropInfo)
-                                            dropdownItem1.Text = droptext
+                                            dropdownItem1.Text = string.format("%s - %s", title, droptext)
                                             DropDownFrame:TweenSize(UDim2.new(0, 365, 0, 36), "In", "Quint", 0.10)
                                             wait()
                                             isDropped = false
