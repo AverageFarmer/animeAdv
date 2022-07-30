@@ -46,7 +46,7 @@ syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFar
 
 --// Vars
 local Lobby = "_lobbytemplategreen1"
-
+local ctrl = false
 local SavedSettings = (isfile(FileName .. ".lua") and readfile(FileName .. ".lua")) or {}
 local Settings = {
     Map = "namek",
@@ -368,6 +368,25 @@ if game.PlaceId == 8304191830 then
             end)
         end
     end
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and ctrl then
+            local Character = Player.Character
+            local Humanoid = Character.Humanoid
+            
+            Character:SetPrimaryPartCFrame(CFrame.new(Mouse.Hit.Position) * CFrame.new(0, 3, 0))
+        end
+        
+        if input.KeyCode == Enum.KeyCode.LeftControl then
+            ctrl = true
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input, gameProcessedEvent)
+        if input.KeyCode == Enum.KeyCode.LeftControl then
+            ctrl = false
+        end
+    end)
 
     function FindOpenLobby()
         for i,v in pairs(Lobbies:GetChildren()) do
