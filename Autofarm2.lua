@@ -83,6 +83,7 @@ local Settings = {
         Enabled = false, 
         Rarities = {"Rare"}, 
         KeepTraits = true,
+        KeepShiny = true
     },
 
     AutoSummon = {
