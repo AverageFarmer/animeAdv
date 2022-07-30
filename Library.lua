@@ -520,6 +520,7 @@ function Luxt1.CreateWindow(libName, logoId)
                     --
                     toggInfo = toggInfo or "Toggle"
                     callback = callback or function() end
+                    print("The Default is" .. tostring(default))
 
                     ToggleFrame.Name = "ToggleFrame"
                     ToggleFrame.Parent = sectionFrame
@@ -584,7 +585,7 @@ function Luxt1.CreateWindow(libName, logoId)
                             togDe = true
                             on = value or not on
                             callback(on) 
-                            print(on)
+                            print(on, default)
                             if on then
                                 checkBtn.Parent.toggleInfo.TextColor3 = textColor
                                 checkBtn.ImageColor3 = textColor
