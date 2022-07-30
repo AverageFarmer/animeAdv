@@ -590,7 +590,7 @@ if game.PlaceId == 8304191830 then
                         print(Args[2])
                         local PlayerGot = GetPlayers(Args[1])
 
-                        if Player.Name == PlayerGot.Name then
+                        if PlayerGot then
                             TeleportService:Teleport(game.PlaceId)
                         end
                     end
