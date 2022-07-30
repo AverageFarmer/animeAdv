@@ -1151,7 +1151,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                 expand_more.BackgroundTransparency = 1.000
                                 expand_more.Position = UDim2.new(0.91900003, 0, 0.138999999, 0)
                                 expand_more.Size = UDim2.new(0, 25, 0, 25)
-                                expand_more.ZIndex = 2
+                                expand_more.ZIndex = 3
                                 expand_more.Image = "rbxassetid://3926305904"
                                 expand_more.ImageColor3 = arrowColor
                                 expand_more.ImageRectOffset = Vector2.new(564, 284)
