@@ -1285,7 +1285,7 @@ function Luxt1.CreateWindow(libName, logoId)
 
                                 function element:Set(value)
                                     callback(value)
-                                    dropdownItem1.Text = value
+                                    dropdownItem1.Text = string.format("%s - %s", title, value)
                                 end
 
                                 function element:Refresh(options)
