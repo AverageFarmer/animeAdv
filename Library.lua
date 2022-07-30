@@ -1288,7 +1288,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                     dropdownItem1.Text = value
                                 end
 
-                                function element:Refesh(options)
+                                function element:Refresh(options)
                                     for i, v in pairs(dropdownFrame:GetChildren()) do
                                         if v.Name == "optionBtnFrame" then
                                             v:Destroy()
