@@ -32,7 +32,7 @@ local AllUnits = EndpointsClient.session.collection.collection_profile_data.owne
 local ClientToServer = ReplicatedStorage:WaitForChild("endpoints"):WaitForChild("client_to_server")
 
 --// Const
-local Player = Players.LocalPlayer
+local Player = Players.LocalPlayer or Players.PlayerAdded:Wait()
 local Mouse = Player:GetMouse()
 local PlayerGui = Player:WaitForChild("PlayerGui")
 local Units = game:GetService("Workspace")["_UNITS"]
