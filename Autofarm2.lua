@@ -846,9 +846,9 @@ elseif game.PlaceId == 8349889591 then
     
         function start() -- starts the game
             addUnits()
-            task.wait(1.5)
+            task.wait(2)
     
-            SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player._stats.gem_amount.Value)), 60 * 20)
+            SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 20)
             task.spawn(function()
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
             end)
