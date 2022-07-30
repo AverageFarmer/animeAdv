@@ -309,6 +309,10 @@ if game.PlaceId == 8304191830 then
 
     repeat
         task.wait()
+    until EndpointsClient
+
+    repeat
+        task.wait()
     until EndpointsClient.session
 
     repeat
