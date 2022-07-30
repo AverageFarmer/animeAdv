@@ -54,7 +54,7 @@ local Settings = {
     SellAt = 23,
     
     AutoBuy = {
-        Enabled =  false,
+        Enabled =  true,
         ToBuy = {"summon_ticket"}
     },
     
@@ -100,6 +100,7 @@ for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
 end
 
 Settings.AutoDelete.Enabled = false
+Settings.AutoBuy.Enabled = true
 
 -- Anti Afkv2
 Player.Idled:Connect(function(time)

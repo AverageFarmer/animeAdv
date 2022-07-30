@@ -803,7 +803,6 @@ function Luxt1.CreateWindow(libName, logoId)
                             TextBox.Changed:Connect(anim)
 
                             TextBox.FocusLost:Connect(function(EnterPressed)
-                                if not EnterPressed then return end
                                 callback(TextBox.Text)
                                 textboxFrame:TweenSize(UDim2.new(0, 359,0, 30), "InOut", "Quint", 0.18, true)
                                 wait(0.18)
