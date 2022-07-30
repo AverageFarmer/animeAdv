@@ -1,5 +1,7 @@
 print("Loading")
-
+repeat
+    task.wait()
+until game.Players.LocalPlayer
 --\\ Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -38,6 +40,10 @@ local Units = game:GetService("Workspace")["_UNITS"]
 local url = "https://discord.com/api/webhooks/999000287664676927/W0O5Dbs4OEUkuUYlkjpdU8aYlonN3Qs1d2bXy2ULbTNRF9VrrFJK95rGYukTfgpmWY11"
 
 local FileName = "AAFarm "..tostring(Player.UserId)
+
+-- AutoLaunch
+syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua"))
+
 --// Vars
 local Lobby = "_lobbytemplategreen1"
 
@@ -96,9 +102,6 @@ for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
 end
 
 Settings.AutoDelete.Enabled = false
-
--- AutoLaunch
-syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua")) -- changelink
 
 -- Anti Afkv2
 Player.Idled:Connect(function(time)
@@ -360,7 +363,7 @@ if game.PlaceId == 8304191830 then
             end)
             
             PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.Units.SpawnCaps or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
-                MapInfo.Upgrades[SlotNumber] = val
+                MapInfo.SpawnCaps[SlotNumber] = val
                 Save()
             end)
         end
@@ -719,7 +722,7 @@ elseif game.PlaceId == 8349889591 then
     
         function GetSpawnCap(UnitName)
             for Index, uuid_name in pairs(MapInfo.Units) do
-                local split = string.split(uuid_name, ":") -- uuid:name
+                local split = string.split(uuid_name, ":") -- name:uuid
                 local unitname = split[1]
                 local uuid = split[2]
     
@@ -812,6 +815,7 @@ elseif game.PlaceId == 8349889591 then
                 local Name = Info["Name"]
                 print(Name)
                 local Cap = GetSpawnCap(Name) -- Spawn Cap
+                print(Cap)
                 for i = 1, Cap do
                     task.wait(1)
                     spawnUnit(Index)
