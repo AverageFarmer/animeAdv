@@ -1236,6 +1236,7 @@ function Luxt1.CreateWindow(libName, logoId)
     
                                         DropYSize = DropYSize + 40
                                         optionBtn1.MouseButton1Click:Connect(function()
+                                            print(v)
                                             callback(v)
                                             dropdownItem1.Text = v
                                             DropDownFrame:TweenSize(UDim2.new(0, 365, 0, 36), "In", "Quint", 0.10)
