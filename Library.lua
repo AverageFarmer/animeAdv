@@ -1462,6 +1462,8 @@ function Luxt1.CreateWindow(libName, logoId)
                                                 end
     
                                                 dropInfo = fakeList
+                                            else
+                                                table.insert(dropInfo, v)
                                             end
                                             ListToText()
                                             callback(dropInfo)
