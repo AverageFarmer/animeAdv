@@ -381,7 +381,7 @@ if game.PlaceId == 8304191830 then
                 Save()
             end)
             
-            PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.Units.SpawnCaps or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
+            PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.SpawnCaps[SlotNumber] or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
                 MapInfo.SpawnCaps[SlotNumber] = val
                 Save()
             end)
