@@ -1096,8 +1096,9 @@ function Luxt1.CreateWindow(libName, logoId)
                                 UICorner.Parent = TextLabel
                             end
 
-                            function ItemHandling:DropDown(dropInfo, list, callback)
+                            function ItemHandling:DropDown(title, dropInfo, list, callback)
                                 local element = {}
+                                title = title or ""
                                 callback = callback or function() end
                                 list = list or {}
                                 dropInfo = dropInfo or ""
@@ -1184,7 +1185,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                 dropdownItem1.Size = UDim2.new(0, 293, 0, 30)
                                 dropdownItem1.ZIndex = 2
                                 dropdownItem1.Font = Enum.Font.GothamSemibold
-                                dropdownItem1.Text = dropInfo
+                                dropdownItem1.Text = string.format("%s - %s", title, dropInfo)
                                 dropdownItem1.TextColor3 = Color3.fromRGB(153, 255, 238)
                                 dropdownItem1.TextSize = 14.000
                                 dropdownItem1.TextXAlignment = Enum.TextXAlignment.Left
@@ -1300,8 +1301,9 @@ function Luxt1.CreateWindow(libName, logoId)
                                 return element
                             end
 
-                            function ItemHandling:MultiDropDown(dropInfo, list, callback)
+                            function ItemHandling:MultiDropDown(title, dropInfo, list, callback)
                                 local element = {}
+                                title = title or ""
                                 callback = callback or function() end
                                 list = list or {}
                                 dropInfo = dropInfo or {}
@@ -1400,7 +1402,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                 dropdownItem1.Size = UDim2.new(0, 293, 0, 30)
                                 dropdownItem1.ZIndex = 2
                                 dropdownItem1.Font = Enum.Font.GothamSemibold
-                                dropdownItem1.Text = droptext
+                                dropdownItem1.Text = string.format("%s - %s", title, droptext)
                                 dropdownItem1.TextColor3 = Color3.fromRGB(153, 255, 238)
                                 dropdownItem1.TextSize = 14.000
                                 dropdownItem1.TextXAlignment = Enum.TextXAlignment.Left
