@@ -1,3 +1,5 @@
+print("Loading")
+
 --\\ Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -749,10 +751,10 @@ elseif game.PlaceId == 8349889591 then
                 if not Log[Index] then
                     Log[Index] = 1
                 else
-                    Log[Index] += 1
+                    Log[Index] = Log[Index] + 1
                 end
     
-                SpawnNum += 1
+                SpawnNum = SpawnNum + 1
             end
         end
     
