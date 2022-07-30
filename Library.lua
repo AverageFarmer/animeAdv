@@ -1238,7 +1238,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                         optionBtn1.MouseButton1Click:Connect(function()
                                             print(v)
                                             callback(v)
-                                            dropdownItem1.Text = string.format("%s - %s", title, dropInfo)
+                                            dropdownItem1.Text = string.format("%s - %s", title, v)
                                             DropDownFrame:TweenSize(UDim2.new(0, 365, 0, 36), "In", "Quint", 0.10)
                                             task.wait()
                                             isDropped = false
