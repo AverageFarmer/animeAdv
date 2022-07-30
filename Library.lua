@@ -506,7 +506,7 @@ function Luxt1.CreateWindow(libName, logoId)
             end
 
                 function ItemHandling:Toggle(toggInfo, default, callback)
-                    local element = {}
+                    local element = {Value = false}
 
                     local ToggleFrame = Instance.new("Frame")
                     local toggleFrame = Instance.new("Frame")
@@ -521,7 +521,25 @@ function Luxt1.CreateWindow(libName, logoId)
                     toggInfo = toggInfo or "Toggle"
                     callback = callback or function() end
                     print(toggInfo .. tostring(default))
+                    
+                    function element:Set(value)
+                        self.Value = value
+                        callback(value) 
 
+                        if value then
+                            checkBtn.Parent.toggleInfo.TextColor3 = textColor
+                            checkBtn.ImageColor3 = textColor
+                            checkBtn.ImageRectOffset = Vector2.new(4, 836)
+                            checkBtn.ImageRectSize = Vector2.new(48,48)
+                        else
+                            checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(97, 97, 97)
+                            checkBtn.ImageColor3 = Color3.fromRGB(97, 97, 97)
+                            checkBtn.ImageRectOffset = Vector2.new(940, 784)
+                            checkBtn.ImageRectSize = Vector2.new(48,48)
+                        end
+                        wait(.5)
+                    end
+                    
                     ToggleFrame.Name = "ToggleFrame"
                     ToggleFrame.Parent = sectionFrame
                     ToggleFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
@@ -579,11 +597,9 @@ function Luxt1.CreateWindow(libName, logoId)
 
                     local togDe = false
 
-
-                    toggleUI(default)
-
                     checkBtn.MouseButton1Click:Connect(function()
-                        toggleUI()
+                        element.Value = not element.Value
+                        element:Set(element.Value)
                     end)
 
                     checkBtn.MouseButton1Up:Connect(function()
@@ -594,23 +610,7 @@ function Luxt1.CreateWindow(libName, logoId)
                         checkBtn.Parent:TweenSize(UDim2.new(0, 359,0, 30), "InOut", "Quint", 0.18, true)
                     end)
 
-                    function element:Set(value)
-                        callback(on) 
-
-                        if on then
-                            checkBtn.Parent.toggleInfo.TextColor3 = textColor
-                            checkBtn.ImageColor3 = textColor
-                            checkBtn.ImageRectOffset = Vector2.new(4, 836)
-                            checkBtn.ImageRectSize = Vector2.new(48,48)
-                        else
-                            checkBtn.Parent.toggleInfo.TextColor3 = Color3.fromRGB(97, 97, 97)
-                            checkBtn.ImageColor3 = Color3.fromRGB(97, 97, 97)
-                            checkBtn.ImageRectOffset = Vector2.new(940, 784)
-                            checkBtn.ImageRectSize = Vector2.new(48,48)
-                        end
-                        wait(.5)
-                        togDe = false
-                    end
+                    element:Set(default)
 
                     return element
                 end
