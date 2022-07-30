@@ -1514,7 +1514,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                 end
                                 MakeOptions(list)
 
-                                function element:Set(value:table)
+                                function element:Set(value)
                                     dropInfo = value
                                     ListToText()
                                     callback(value)
