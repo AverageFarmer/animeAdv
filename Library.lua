@@ -583,9 +583,9 @@ function Luxt1.CreateWindow(libName, logoId)
                     local function toggleUI(value)
                         if not togDe then
                             togDe = true
-                            on = value or not on
+                            on = (value ~= nil and value) or not on
                             callback(on) 
-                            print(on, default)
+
                             if on then
                                 checkBtn.Parent.toggleInfo.TextColor3 = textColor
                                 checkBtn.ImageColor3 = textColor
