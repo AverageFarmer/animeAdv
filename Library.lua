@@ -1517,7 +1517,7 @@ function Luxt1.CreateWindow(libName, logoId)
                                     dropInfo = value
                                     ListToText()
                                     callback(value)
-                                    dropdownItem1.Text = droptext
+                                    dropdownItem1.Text = title .. "- " .. droptext
                                 end
 
                                 function element:Refesh(options)
