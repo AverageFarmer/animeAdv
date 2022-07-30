@@ -2,6 +2,7 @@ print("Loading")
 repeat
     task.wait()
 until game.Players.LocalPlayer
+task.wait(5)
 --\\ Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -21,12 +22,6 @@ local Loader = require(src:WaitForChild("Loader"));
 local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
 local UnitsInfo = require(Data.Units)
 local Items = require(Data:WaitForChild("ItemsForSale"))
-repeat
-    task.wait()
-until EndpointsClient.session
-task.wait(3)
-local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
-local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
 
 --//Remotes
 local ClientToServer = ReplicatedStorage:WaitForChild("endpoints"):WaitForChild("client_to_server")
@@ -312,6 +307,17 @@ if game.PlaceId == 8304191830 then
     local MaxSlots = 5
     local Pets = {}
 
+    repeat
+        task.wait()
+    until EndpointsClient.session
+
+    repeat
+        task.wait()
+    until EndpointsClient.session.collection
+    task.wait(3)
+    local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
+    local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
+
     for Index, uuid in pairs(equipped) do
         if AllUnits[uuid] then
             local info = AllUnits[uuid]
@@ -458,7 +464,7 @@ if game.PlaceId == 8304191830 then
     end
 
     function teleport()
-        task.wait(16)
+        task.wait(10)
 
         repeat
             task.wait()
