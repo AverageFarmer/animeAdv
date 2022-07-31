@@ -284,6 +284,7 @@ if game.PlaceId == 8304191830 then
     local SellAt
     SellAt = MapSettings:TextBox("Sell At Wave:", Settings.SellAt, function(val)
         val = tonumber(val) or 1
+        print(val)
         SellAt:Set(val)
         Save()
     end)
