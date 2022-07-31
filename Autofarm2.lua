@@ -286,6 +286,7 @@ if game.PlaceId == 8304191830 then
         val = tonumber(val) or 1
         print(val)
         SellAt:Set(val)
+        Settings.SellAt = val
         Save()
     end)
 
