@@ -171,7 +171,8 @@ if game.PlaceId == 8304191830 then
         "aot",
         --"demonslayer",
         --"naruto",
-        "marineford"
+        "marineford",
+        "tokyoghoul"
     }
 
     local Numbers = {
