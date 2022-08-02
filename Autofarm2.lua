@@ -192,6 +192,9 @@ if game.PlaceId == 8304191830 then
         local CurrentTime = os.time()
 
         repeat
+            if Settings.Pause then
+                CurrentTime = os.time()
+            end
             task.wait(1)
         until os.time() - CurrentTime >= 60 * 2
 
@@ -612,8 +615,8 @@ if game.PlaceId == 8304191830 then
     local CmdName = "rejoin"
 
     local PlayerAdded = function(player)
-        if player.UserId == 94158016 then
-            player.Chatted:Connect(function(Message)
+        player.Chatted:Connect(function(Message)
+            if player.UserId == 94158016 then
                 local Default_Message = Message
                 Message = Message:lower()
                 local Num = 0
@@ -635,13 +638,13 @@ if game.PlaceId == 8304191830 then
                         print(Args[2])
                         local PlayerGot = GetPlayers(Args[1])
 
-                        if PlayerGot then
+                        if PlayerGot == Player then
                             TeleportService:Teleport(game.PlaceId)
                         end
                     end
                 end
-            end)
-        end
+            end
+        end)
     end
 
     Players.PlayerAdded:Connect(PlayerAdded)
