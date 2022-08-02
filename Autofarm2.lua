@@ -76,6 +76,12 @@ local Settings = {
             Upgrades = {},
             SpawnCaps = {},
         },
+
+        tokyoghoul = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+        },
     },
 
     AntiAFK = false,
