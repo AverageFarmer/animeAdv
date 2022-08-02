@@ -101,12 +101,22 @@ local Settings = {
 }
 
 --// Setup
-for i,v in pairs(HttpService:JSONDecode(SavedSettings)) do
+local currentSettings = HttpService:JSONDecode(SavedSettings)
+
+for i,v in pairs(currentSettings) do
+    if i == "Maps" then
+        for mapName, info in pairs(Settings.Maps) do
+            if not v[mapName] then
+                currentSettings["Maps"][mapName] = info
+            end
+        end
+    end
     Settings[i] = v
 end
 
 Settings.AutoDelete.Enabled = false
 Settings.AutoBuy.Enabled = true
+
 
 -- Anti Afkv2
 Player.Idled:Connect(function(time)
