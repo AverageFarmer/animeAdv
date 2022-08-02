@@ -51,7 +51,6 @@ local Settings = {
     Difficulty = "Normal",
     IsInf = false,
     Pause = true,
-    SellAt = 23,
     
     AutoBuy = {
         Enabled =  true,
@@ -63,24 +62,28 @@ local Settings = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
+            SellAt = {},
         },
 
         aot = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
+            SellAt = {},
         },
 
         marineford = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
+            SellAt = {},
         },
 
         tokyoghoul = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
+            SellAt = {},
         },
     },
 
@@ -298,15 +301,6 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
 
-    local SellAt
-    SellAt = MapSettings:TextBox("Sell At Wave:", Settings.SellAt, function(val)
-        val = tonumber(val) or 1
-        print(val)
-        SellAt:Set(val)
-        Settings.SellAt = val
-        Save()
-    end)
-
     local Pause = TeleportSettings:Toggle("Pause", Settings.Pause, function(val)
         Settings.Pause = val
         Save()
@@ -373,6 +367,18 @@ if game.PlaceId == 8304191830 then
             local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
             local UnitData = GetUnitInfo(UnitName)
             local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
+
+            if not MapInfo["SellAt"] then
+                MapInfo["SellAt"] = 23
+            end
+
+            local SellAt
+            SellAt = MapSettings:TextBox("Sell At Wave:", MapInfo["SellAt"], function(val)
+                val = tonumber(val) or 1
+                SellAt:Set(val)
+                MapInfo["SellAt"] = val
+                Save()
+            end)
         
             MapSlot:Label("Unit#" .. SlotNumber)
             MapSlot:DropDown("", CurrentUnit, Pets, function(val)
