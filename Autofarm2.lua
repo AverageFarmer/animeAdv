@@ -372,6 +372,10 @@ if game.PlaceId == 8304191830 then
 
         local UpgradeDropHolder = {}
         local PlacementDropHolder = {}
+        
+        if not MapInfo["SellAt"] then
+            MapInfo["SellAt"] = 23
+        end
 
         local SellAt
         SellAt = MapSlot:TextBox("Sell At Wave:", MapInfo["SellAt"], function(val)
@@ -381,15 +385,13 @@ if game.PlaceId == 8304191830 then
             Save()
         end)
 
+        
         for SlotNumber = 1, MaxSlots do
             local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
             local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
             local UnitData = GetUnitInfo(UnitName)
             local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
 
-            if not MapInfo["SellAt"] then
-                MapInfo["SellAt"] = 23
-            end
         
             MapSlot:Label("Unit#" .. SlotNumber)
             MapSlot:DropDown("", CurrentUnit, Pets, function(val)
