@@ -1,4 +1,5 @@
 if _G.Loaded then return end
+_G.Loaded =  true
 
 repeat
     task.wait()
@@ -15,7 +16,6 @@ local Players = game:GetService("Players")
 repeat
     task.wait(1)
 until game.Players.LocalPlayer:FindFirstChild("_stats")
-_G.Loaded =  true
 --// Modules
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
 local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/library.lua"))()
