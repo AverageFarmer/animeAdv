@@ -1,4 +1,5 @@
-print("Loading")
+if _G.Loaded then return end
+
 repeat
     task.wait()
 until game.Players.LocalPlayer
@@ -14,6 +15,7 @@ local Players = game:GetService("Players")
 repeat
     task.wait(1)
 until game.Players.LocalPlayer:FindFirstChild("_stats")
+_G.Loaded =  true
 --// Modules
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
 local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/library.lua"))()
@@ -62,28 +64,28 @@ local Settings = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
-            SellAt = {},
+            SellAt = 23,
         },
 
         aot = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
-            SellAt = {},
+            SellAt = 23,
         },
 
         marineford = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
-            SellAt = {},
+            SellAt = 23,
         },
 
         tokyoghoul = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
-            SellAt = {},
+            SellAt = 23,
         },
     },
 
@@ -182,6 +184,15 @@ end
 if game.PlaceId == 8304191830 then
     --// Lobby
 
+    task.spawn(function()
+        local CurrentTime = os.time()
+        
+        repeat
+            task.wait(1)
+        until os.time() - CurrentTime >= 60 * 2
+
+        TeleportService:Teleport(8304191830)
+    end)
     --// Local Const
     local Lobbies = game:GetService("Workspace")["_LOBBIES"].Story
 
@@ -362,6 +373,14 @@ if game.PlaceId == 8304191830 then
         local UpgradeDropHolder = {}
         local PlacementDropHolder = {}
 
+        local SellAt
+        SellAt = MapSlot:TextBox("Sell At Wave:", MapInfo["SellAt"], function(val)
+            val = tonumber(val) or 1
+            SellAt:Set(val)
+            MapInfo["SellAt"] = val
+            Save()
+        end)
+
         for SlotNumber = 1, MaxSlots do
             local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
             local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
@@ -371,14 +390,6 @@ if game.PlaceId == 8304191830 then
             if not MapInfo["SellAt"] then
                 MapInfo["SellAt"] = 23
             end
-
-            local SellAt
-            SellAt = MapSettings:TextBox("Sell At Wave:", MapInfo["SellAt"], function(val)
-                val = tonumber(val) or 1
-                SellAt:Set(val)
-                MapInfo["SellAt"] = val
-                Save()
-            end)
         
             MapSlot:Label("Unit#" .. SlotNumber)
             MapSlot:DropDown("", CurrentUnit, Pets, function(val)
@@ -973,7 +984,7 @@ elseif game.PlaceId == 8349889591 then
             end
     
             game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
-                if game:GetService("Workspace")["_wave_num"].Value >= Settings.SellAt then
+                if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt then
                     SellAll()
                 end
             end)
