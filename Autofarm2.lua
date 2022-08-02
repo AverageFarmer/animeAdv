@@ -248,7 +248,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizFarm v1.1a")
+    local Window = Library.CreateWindow("DizFarm v1.1b")
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
