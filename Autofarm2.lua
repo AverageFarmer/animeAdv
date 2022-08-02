@@ -186,7 +186,7 @@ if game.PlaceId == 8304191830 then
 
     task.spawn(function()
         local CurrentTime = os.time()
-        
+
         repeat
             task.wait(1)
         until os.time() - CurrentTime >= 60 * 2
@@ -278,7 +278,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizFarm v1.1b")
+    local Window = Library.CreateWindow("DizFarm v1.1c")
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
