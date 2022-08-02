@@ -372,9 +372,13 @@ if game.PlaceId == 8304191830 then
 
         local UpgradeDropHolder = {}
         local PlacementDropHolder = {}
-        
+
         if not MapInfo["SellAt"] then
             MapInfo["SellAt"] = 23
+        else
+            if typeof(MapInfo["SellAt"]) == "table" then
+                MapInfo["SellAt"] = 23
+            end
         end
 
         local SellAt
@@ -385,14 +389,12 @@ if game.PlaceId == 8304191830 then
             Save()
         end)
 
-        
         for SlotNumber = 1, MaxSlots do
             local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
             local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
             local UnitData = GetUnitInfo(UnitName)
             local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
 
-        
             MapSlot:Label("Unit#" .. SlotNumber)
             MapSlot:DropDown("", CurrentUnit, Pets, function(val)
                 MapInfo.Units[SlotNumber] = val 
