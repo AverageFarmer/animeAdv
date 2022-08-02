@@ -1,6 +1,5 @@
 if _G.Loaded then return end
 _G.Loaded =  true
-
 repeat
     task.wait()
 until game.Players.LocalPlayer
@@ -38,8 +37,10 @@ local Units = game:GetService("Workspace")["_UNITS"]
 
 local url = "https://discord.com/api/webhooks/999000287664676927/W0O5Dbs4OEUkuUYlkjpdU8aYlonN3Qs1d2bXy2ULbTNRF9VrrFJK95rGYukTfgpmWY11"
 
-local FileName = "AAFarm "..tostring(Player.UserId)
+local FileNameOld = "AAFarm "..tostring(Player.UserId)
+local FileName = "AAFarm2 "..tostring(Player.UserId)
 
+delfile(FileNameOld .. ".lua")
 -- AutoLaunch
 syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua"))
 
