@@ -934,8 +934,9 @@ elseif game.PlaceId == 8349889591 then
     
         function upgradeUnits()
             for i, v in pairs(Units:GetChildren()) do
-                if not v:FindFirstChild("_stats") or v.Name == "aot_generic" or v.Name == "aot_generic:shiny" then continue end
+                if not v:FindFirstChild("_stats") then continue end
                 if v._stats:FindFirstChild("player") and  v._stats:FindFirstChild("player").Value == Player then
+                    if v._stats:FindFirstChild("spawned_units") and v._stats:FindFirstChild("spawned_units").Value == 0 then continue end
                     local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
                     print(MaxUpgrade, v.Name)
                     if v._stats.upgrade.Value ~= MaxUpgrade then 
