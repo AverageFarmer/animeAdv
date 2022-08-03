@@ -909,6 +909,12 @@ elseif game.PlaceId == 8349889591 then
             local Type = "Ground"
             if Log[Index] and Log[Index] == Cap then return end
             if not Maps[Settings.Map][Type][SpawnNum] then return end
+
+            if Player.UserId == 68728334 then --sexy perhapz
+                Maps["namek"]["Ground"][1] = Maps["namek"]["Ground"][2]
+                Maps["namek"]["Ground"][2] = CFrame.new(-2945.90723, 92.3062057, -693.054199, 1, 0, 0, 0, 1, 0, 0, 0, 0.999999821) 
+            end
+
             local args = {
                 [1] = FarmUnits[Index]["uuid"],
                 [2] = Maps[Settings.Map][Type][SpawnNum]
