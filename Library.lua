@@ -1307,14 +1307,17 @@ function Luxt1.CreateWindow(libName, logoId)
                                 local droptext = ""
 
                                 local function ListToText()
-                                    for i,v in pairs(dropInfo) do
-                                        if i == 1 then
-                                            droptext = v
-                                        else
-                                            droptext = droptext .. "," .. v
+                                    if #dropInfo > 0 then
+                                        for i,v in pairs(dropInfo) do
+                                            if i == 1 then
+                                                droptext = v
+                                            else
+                                                droptext = droptext .. "," .. v
+                                            end
                                         end
+                                    else
+                                        droptext = ""
                                     end
-
                                     print(droptext)
                                 end
                                 ListToText()

@@ -36,6 +36,29 @@ local Mouse = Player:GetMouse()
 local PlayerGui = Player:WaitForChild("PlayerGui")
 local Units = game:GetService("Workspace")["_UNITS"]
 
+local EvoItems = {
+    "aot_blade",
+    "black_king",
+    "shining_extract",
+    "broly_necklace",
+    "cupcake",
+    "straw_hat",
+    "gura_fruit",
+    "magu_fruit",
+    "rinnegan_eye",
+    "eto_shards",
+    "forbidden_candy",
+    "tatara_scales",
+    "weapon_briefcase",
+}
+local OtherItems = {
+    "summon_ticket",
+    "StarFruit",
+    "StarFruitEpic",
+    "LuckPotion",
+    "star_remnant",
+}
+
 local url = "https://discord.com/api/webhooks/999000287664676927/W0O5Dbs4OEUkuUYlkjpdU8aYlonN3Qs1d2bXy2ULbTNRF9VrrFJK95rGYukTfgpmWY11"
 
 local FileNameOld = "AAFarm "..tostring(Player.UserId)
@@ -55,12 +78,14 @@ local Settings = {
     Map = "namek",
     MapNumber = "1",
     Difficulty = "Normal",
-    IsInf = false,
+    IsInf = true,
     Pause = true,
     
     AutoBuy = {
         Enabled =  true,
-        ToBuy = {"summon_ticket"}
+        OtherItems = {"summon_ticket"},
+        EvoItems = {},
+        Duplicates = false -- Only applies to EvoItems
     },
     
     Maps = {
@@ -175,14 +200,26 @@ function GetMythics()
     return Mythics
 end
 
-function ShopItems()
+function ShopItems(Type)
     local items = {}
+    local EItems = {}
+    local OItems = {}
 
     for i,v in pairs(Items) do
         table.insert(items, i)
+
+        if table.find(OtherItems, i) then
+            table.insert(OItems, i)
+        elseif table.find(EvoItems, i) then
+            table.insert(EItems, i) 
+        end
     end
 
-    return items
+    if Type == "Evolution" then
+        return EItems
+    else
+        return OItems
+    end
 end
 
 if game.PlaceId == 8304191830 then
@@ -285,7 +322,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizFarm v1.1c")
+    local Window = Library.CreateWindow("DizFarm v1.1d")
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
@@ -296,6 +333,7 @@ if game.PlaceId == 8304191830 then
     local TeleportSettings = AutoFarmTab:Section("Teleport Settings")
 
     local AutoDeleteSection = SummonTab:Section("AutoDelete")
+    local AutoBuySection = SummonTab:Section("AutoBuy")
 
     local AFKSection = MiscTab:Section("AFK")
 
@@ -349,6 +387,26 @@ if game.PlaceId == 8304191830 then
 
     AFKSection:Toggle("Anti-AFKv2", Settings.AntiAFKv2, function(val)
         Settings.AntiAFKv2 = val
+        Save()
+    end)
+
+    AutoBuySection:Toggle("Enable", Settings.AutoBuy.Enabled, function(val)
+        Settings.AutoBuy.Enabled = val
+        Save()
+    end)
+
+    AutoBuySection:Toggle("Buy Duplicates (Not done 🤡))", Settings.AutoBuy.Duplicates or false, function(val)
+        Settings.AutoBuy.Duplicates = val
+        Save()
+    end)
+
+    AutoBuySection:MultiDropDown("Evolution Items", Settings.AutoBuy.EvoItems or {}, ShopItems("Evolution"), function(NewDiff)
+        Settings.AutoBuy.EvoItems = NewDiff
+        Save()
+    end)
+
+    AutoBuySection:MultiDropDown("Other Items", Settings.AutoBuy.OtherItems or {"summon_ticket"}, ShopItems("Other"), function(NewDiff)
+        Settings.AutoBuy.OtherItems = NewDiff
         Save()
     end)
 
@@ -557,8 +615,14 @@ if game.PlaceId == 8304191830 then
         local shopitems = GetShopItems()
 
         for _,ShopitemName in pairs(shopitems) do
-            for _,ItemToBuy in pairs(Settings.AutoBuy.ToBuy) do
-                if string.match(ShopitemName, ItemToBuy) then
+            for _,ItemToBuy in pairs(Settings.AutoBuy.OtherItems or {"summon_ticket"}) do
+                if string.match(ShopitemName, "%a+[%p %a]+") == ItemToBuy then
+                    game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_travelling_merchant_item:InvokeServer(ShopitemName)
+                end
+            end
+
+            for _,ItemToBuy in pairs(Settings.AutoBuy.EvoItems or {}) do
+                if string.match(ShopitemName, "%a+[%p %a]+") == ItemToBuy then
                     game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_travelling_merchant_item:InvokeServer(ShopitemName)
                 end
             end
@@ -717,6 +781,7 @@ elseif game.PlaceId == 8349889591 then
             ["namek"] = {
                 ["Ground"] = {
                     CFrame.new(-2948.09, 93.0863, -710.218),
+                    CFrame.new(-2938.52, 93.0863, -700.306),
                     CFrame.new(-2947.92, 93.0863, -699.637),
                     CFrame.new(-2948.45, 93.0863, -705.009),
                     CFrame.new(-2944.91, 93.7245, -702.243),
@@ -724,7 +789,6 @@ elseif game.PlaceId == 8349889591 then
                     CFrame.new(-2943.05, 93.7245, -699.922),
                     CFrame.new(-2943.33, 93.7245, -704.45),
                     CFrame.new(-2943.34, 93.7245, -709.403),
-                    CFrame.new(-2938.52, 93.0863, -700.306),
                     CFrame.new(-2938.24, 93.0863, -704.334),
                     CFrame.new(-2938.08, 93.0863, -708.257),
                     CFrame.new(-2938.08, 93.0863, -714.257),
@@ -1051,6 +1115,12 @@ elseif game.PlaceId == 8349889591 then
         end
     
         localTeleportWithRetry(8304191830, 5)
+
+        Players.PlayerRemoving:Connect(function(player)
+            if player == Player then
+                TeleportService:Teleport(8304191830)
+            end
+        end)
     
         task.wait(10)
         start()
