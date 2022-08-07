@@ -24,6 +24,7 @@ local src = ReplicatedStorage:WaitForChild("src")
 local Data = src:WaitForChild("Data")
 local Loader = require(src:WaitForChild("Loader"));
 local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
+local GUIService = Loader.load_client_service(script, "GUIService");
 local UnitsInfo = require(Data.Units)
 local Items = require(Data:WaitForChild("ItemsForSale"))
 
@@ -322,7 +323,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizFarm v1.1d")
+    local Window = Library.CreateWindow("DizFarm v1.1e", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
@@ -395,7 +396,7 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
 
-    AutoBuySection:Toggle("Buy Duplicates (Not done 🤡))", Settings.AutoBuy.Duplicates or false, function(val)
+    AutoBuySection:Toggle("Buy Duplicates (Not done 🤡)", Settings.AutoBuy.Duplicates or false, function(val)
         Settings.AutoBuy.Duplicates = val
         Save()
     end)
@@ -413,10 +414,25 @@ if game.PlaceId == 8304191830 then
     local MaxSlots = 5
     local Pets = {}
 
+
+    PlayerGui:WaitForChild("LeftUI_test").Buttons.Play.Visible = true
+    local ButtonFolder = game:GetObjects("rbxassetid://10504063278")[1]
+
+    for i,v in pairs(ButtonFolder:GetChildren()) do
+        v.Parent = PlayerGui:WaitForChild("LeftUI_test").Buttons
+
+        v.MouseButton1Click:Connect(function()
+            if v.Name == "Evolve" then
+                GUIService.evolve_ui:toggle()
+            else
+                GUIService.trait_reroll_ui:toggle();
+            end
+        end)
+    end
+
     repeat
         task.wait()
     until EndpointsClient.session
-
     task.wait(3)
     local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
     local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
@@ -588,6 +604,7 @@ if game.PlaceId == 8304191830 then
         repeat
             task.wait()
         until not Settings.Pause
+        EquipFarmUnits()
         TeleportToMap()
     end
 
@@ -629,6 +646,46 @@ if game.PlaceId == 8304191830 then
         end
     end
 
+    function ClaimQuest()
+        local QuestsClass = EndpointsClient.session.quest_handler.quest_profile_data.quests
+
+        for i,v in pairs(QuestsClass) do
+            if not v.quest_progress then continue end
+            local QuestUUID = i
+            local Needed = v.quest_info.quest_class["amount"]
+            local Progress = v.quest_progress["amount"] or 0
+            
+            if (Needed and Progress) then
+                if Progress >= Needed then
+                    ClientToServer.redeem_quest:InvokeServer(QuestUUID)
+                end
+            end
+        end
+    end
+
+    function EquipFarmUnits()
+        local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
+        local UnitsToEquip = {}
+
+        for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
+            local split = string.split(name_uuid, ":")
+            local name = split[1]
+            local uuid = split[2]
+
+            if AllUnits[uuid] then
+                table.insert(UnitsToEquip, uuid)
+            end
+        end
+
+        task.wait(.5)
+        ClientToServer.unequip_all:InvokeServer()
+
+        for _, uuid in pairs(UnitsToEquip) do
+            ClientToServer.equip_unit:InvokeServer(uuid)
+            task.wait(.2)
+        end
+    end
+
     localTeleportWithRetry(game.PlaceId, 5)
 
     task.spawn(function()
@@ -645,6 +702,7 @@ if game.PlaceId == 8304191830 then
     task.spawn(function()
         repeat
             AutoDelete()
+            ClaimQuest()
             task.wait(1)
         until false
     end)
