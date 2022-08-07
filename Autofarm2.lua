@@ -1150,7 +1150,7 @@ elseif game.PlaceId == 8349889591 then
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
 
                 repeat
-                    timelapse.Text = string.format("%sm:%sh", math.floor(Seconds/60%60), Seconds%60)
+                    timelapse.Text = string.format("%sm:%ss", math.floor(Seconds/60%60), Seconds%60)
                     task.wait(1)
                     Seconds = Seconds + 1
                 until false
