@@ -1143,10 +1143,17 @@ elseif game.PlaceId == 8349889591 then
         function start() -- starts the game
             addUnits()
             task.wait(2)
-    
-            SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 20)
+            local Seconds = 0
+            SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
+            local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
             task.spawn(function()
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
+
+                repeat
+                    timelapse.Text = string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60)
+                    task.wait(1)
+                    Seconds = Seconds + 1
+                until false
             end)
     
             for Index, Info in pairs(FarmUnits) do
