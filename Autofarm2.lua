@@ -986,13 +986,13 @@ elseif game.PlaceId == 8349889591 then
                     ["fields"] = {
                         {
                             ["name"] = "Gems recived:",
-                            ["value"] = string.match(PlayerGui.ResultsUI.Holder.GoldGemXP.GemReward.Main.Amount.Text, "%d+"),
+                            ["value"] = string.match(PlayerGui.ResultsUI.Holder.GoldGemXP.GemReward.Main.Amount.Text, "%d+") .. " 💎",
                             ["inline"] = true
                         },
             
                         {
                             ["name"] = "Wave ended:",
-                            ["value"] = game:GetService("Workspace")["_wave_num"].Value,
+                            ["value"] = tostring(game:GetService("Workspace")["_wave_num"].Value) .. " ⚔️",
                             ["inline"] = true
                         },
     
@@ -1004,13 +1004,13 @@ elseif game.PlaceId == 8349889591 then
     
                         {
                             ["name"] = "Time Finished:",
-                            ["value"] = string.match(PlayerGui.ResultsUI.Holder.Middle.Timer.Text, "%d+%p%d+"),
+                            ["value"] = (string.match(PlayerGui.ResultsUI.Holder.Middle.Timer.Text, "%d+%p%d+")) .. " ⌛",
                             ["inline"] = true
                         },
     
                         {
                             ["name"] = "Total Gems:",
-                            ["value"] = Player._stats.gem_amount.Value,
+                            ["value"] = (tostring(Player._stats.gem_amount.Value) .. " 💎"),
                             ["inline"] = true
                         },
                     }
