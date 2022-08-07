@@ -7,6 +7,7 @@ until game.Players.LocalPlayer
 task.wait(2)
 --\\ Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterPack = game:GetService("StarterPack")
 local UserInputService = game:GetService("UserInputService")
 local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
@@ -323,7 +324,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizFarm v1.1e", 6510338924)
+    local Window = Library.CreateWindow("DizFarm beta1.1e", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
@@ -411,10 +412,6 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
 
-    local MaxSlots = 5
-    local Pets = {}
-
-
     PlayerGui:WaitForChild("LeftUI_test").Buttons.Play.Visible = true
     local ButtonFolder = game:GetObjects("rbxassetid://10504063278")[1]
 
@@ -429,28 +426,37 @@ if game.PlaceId == 8304191830 then
             end
         end)
     end
+    
+    local MaxSlots = 5
+    local Pets = {}
 
     repeat
         task.wait()
     until EndpointsClient.session
     task.wait(3)
-    local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
-    local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
+    function SetupUnits()
+        Pets = {}
+        local equipped = EndpointsClient.session.collection.collection_profile_data.equipped_units
+        local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
 
-    for Index, uuid in pairs(equipped) do
-        if AllUnits[uuid] then
-            local info = AllUnits[uuid]
-            
-            Pets[Index] = string.format("%s:%s", info.unit_id, uuid)
+        for Index, uuid in pairs(equipped) do
+            if AllUnits[uuid] then
+                local info = AllUnits[uuid]
+                
+                Pets[Index] = string.format("%s:%s", info.unit_id, uuid)
+            end
         end
+        table.insert(Pets, "None")
     end
-    table.insert(Pets, "None")
 
+    SetupUnits()
+    
     for Index, Map in pairs(Maps) do
         Map = Map:lower()
         local MapInfo = Settings["Maps"][Map]
         local MapSlot = UnitTab:Section(Map)
 
+        local MapDropHolder = {}
         local UpgradeDropHolder = {}
         local PlacementDropHolder = {}
 
@@ -461,6 +467,15 @@ if game.PlaceId == 8304191830 then
                 MapInfo["SellAt"] = 23
             end
         end
+
+        --[[MapSlot:Button("Refresh Units", function()
+            SetupUnits()
+            for i,v in pairs(MapDropHolder) do
+                local CurrentUnit = "None"
+                v:Set(CurrentUnit)
+                v:Refresh(Pets)
+            end
+        end)--]]
 
         local SellAt
         SellAt = MapSlot:TextBox("Sell At Wave:", MapInfo["SellAt"], function(val)
@@ -475,9 +490,10 @@ if game.PlaceId == 8304191830 then
             local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
             local UnitData = GetUnitInfo(UnitName)
             local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
+            local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
 
             MapSlot:Label("Unit#" .. SlotNumber)
-            MapSlot:DropDown("", CurrentUnit, Pets, function(val)
+            MapDropHolder[Index] = MapSlot:DropDown("", CurrentUnit, Pets, function(val)
                 MapInfo.Units[SlotNumber] = val 
 
                 CurrentUnit = val
@@ -486,8 +502,7 @@ if game.PlaceId == 8304191830 then
                 Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 3)
 
                 if UpgradeDropHolder[SlotNumber] then
-                    local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
-                    
+                    UpgradeNum = (UnitData and #UnitData.upgrade) or 3
                     UpgradeDropHolder[SlotNumber]:Set(UpgradeNum)
                     UpgradeDropHolder[SlotNumber]:Refresh(MakeList(UpgradeNum))
 
@@ -665,6 +680,7 @@ if game.PlaceId == 8304191830 then
 
     function EquipFarmUnits()
         local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
+        local EquippedUnits = EndpointsClient.session.collection.collection_profile_data.equipped_units
         local UnitsToEquip = {}
 
         for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
@@ -678,12 +694,34 @@ if game.PlaceId == 8304191830 then
         end
 
         task.wait(.5)
-        ClientToServer.unequip_all:InvokeServer()
 
-        for _, uuid in pairs(UnitsToEquip) do
-            ClientToServer.equip_unit:InvokeServer(uuid)
-            task.wait(.2)
+        local function MakeSpace()
+            local Indexes = {}
+            local unitsNotThere = UnitsToEquip
+            local spaceneeded = #UnitsToEquip
+            for i,uuid in pairs(EquippedUnits) do
+                local Index = table.find(UnitsToEquip, uuid)
+                if not Index then
+                    table.insert(Indexes, uuid)
+                else
+                    table.remove(unitsNotThere, Index)
+                    spaceneeded = math.clamp(spaceneeded - 1, 0, #UnitsToEquip)
+                end
+            end
+
+            for i = 1, spaceneeded do
+                local uuid = Indexes[i]
+                ClientToServer.unequip_unit:InvokeServer(uuid)
+            end
+
+            for _, uuid in pairs(unitsNotThere) do
+                ClientToServer.equip_unit:InvokeServer(uuid)
+                task.wait(.2)
+            end
         end
+        
+
+        MakeSpace()
     end
 
     localTeleportWithRetry(game.PlaceId, 5)
@@ -1175,6 +1213,7 @@ elseif game.PlaceId == 8349889591 then
         localTeleportWithRetry(8304191830, 5)
 
         Players.PlayerRemoving:Connect(function(player)
+            print(player.Name .. " is being removed")
             if player == Player then
                 TeleportService:Teleport(8304191830)
             end
