@@ -161,8 +161,17 @@ local Settings = {
         TotalGems = true,
         TimeCompletedAt = true,
         Map = true,
-        Gamemode = false
+        Gamemode = false,
+        BossesKilled = false
     },
+}
+
+local DefaultWebhookOptions = {
+    TotalGems = true,
+    TimeCompletedAt = true,
+    Map = true,
+    Gamemode = false,
+    BossesKilled = false
 }
 
 --// Setup
@@ -378,7 +387,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizHub beta1.2b", 6510338924)
+    local Window = Library.CreateWindow("DizHub beta1.2c", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
@@ -518,11 +527,15 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
 
-    for i,v in pairs(Settings.WebhookOptions) do
-       WebHookSection:Toggle(i, v, function(val)
-            Settings.WebhookOptions[i] = val
+    for index,Value in pairs(DefaultWebhookOptions) do
+        if not Settings.WebhookOptions[index] then
+            Settings.WebhookOptions[index] = Value
+        end
+        local Setting = Settings.WebhookOptions
+        WebHookSection:Toggle(index, Setting[index], function(val)
+            Settings.WebhookOptions[index] = val
             Save()
-       end) 
+        end) 
     end
 
     for i,v in pairs(game.Players:GetPlayers()) do
@@ -905,7 +918,7 @@ elseif game.PlaceId == 8349889591 then
     ------------------------------------------------------------------------------------------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------------------------
-    
+        local BossesKilled = 0
         local Break = false
     
         request = http_request or request or HttpPost or syn.request
@@ -931,6 +944,22 @@ elseif game.PlaceId == 8349889591 then
                     break
                 end
             until false
+        end)
+
+        Units.ChildAdded:Connect(function(Unit)
+            task.wait(.5)
+            if Unit:FindFirstChild("_stats") then
+                local _stats = Unit:FindFirstChild("_stats")
+                local _threat = _stats:FindFirstChild("threat")
+
+                if (_threat and _threat.Value >= 3) then
+                    repeat
+                        task.wait(1)
+                    until not Unit.Parent
+
+                    BossesKilled = BossesKilled + 1
+                end
+            end
         end)
 
         local FarmUnits = {
@@ -1079,6 +1108,14 @@ elseif game.PlaceId == 8349889591 then
                     ["value"] = Settings.Map .. Emojis.Map,
                     ["inline"] = true
                 },
+
+                ["BossesKilled"] = {
+                    {
+                        ["name"] = "Bosses Killed:",
+                        ["value"] = tostring(BossesKilled) .. Emojis.Skull,
+                        ["inline"] = true
+                    },
+                }
             }
 
             local field = {
