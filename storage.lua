@@ -3,7 +3,7 @@ local data = src:WaitForChild("Data")
 local Loader = require(src:WaitForChild("Loader"));
 
 local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
-local QuestsClass = EndpointsClient.session.quest_handler.quest_profile_data.quests
+local QuestsClass = EndpointsClient.session.collection.collection_profile_data.equipped_units
 --quest_info
 --quest_progress
 
