@@ -549,7 +549,7 @@ if game.PlaceId == 8304191830 then
         end)
     end
     
-    local MaxSlots = 5
+    local MaxSlots = 7
     local Pets = {}
 
     repeat
@@ -1135,7 +1135,7 @@ elseif game.PlaceId == 8349889591 then
     
         function addUnits()
             for i,v in pairs(MapInfo.Units) do
-                if i == 6 then return end
+                if i == 7 then return end
                 if v == "None" then continue end
                 local split = string.split(v, ":") -- uuid:name
                 local UnitName = split[1]
