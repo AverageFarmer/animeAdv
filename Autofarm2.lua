@@ -840,7 +840,9 @@ if game.PlaceId == 8304191830 then
             local uuid = split[2]
 
             if AllUnits[uuid] then
-                table.insert(UnitsToEquip, uuid)
+                if not table.find(UnitsToEquip, uuid) then
+                    table.insert(UnitsToEquip, uuid)
+                end
             end
         end
 
