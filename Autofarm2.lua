@@ -1112,11 +1112,9 @@ elseif game.PlaceId == 8349889591 then
                 },
 
                 ["BossesKilled"] = {
-                    {
-                        ["name"] = "Bosses Killed:",
-                        ["value"] = tostring(BossesKilled) .. Emojis.Skull,
-                        ["inline"] = true
-                    },
+                    ["name"] = "Bosses Killed:",
+                    ["value"] = tostring(BossesKilled) .. Emojis.Skull,
+                    ["inline"] = true
                 }
             }
 
@@ -1179,7 +1177,6 @@ elseif game.PlaceId == 8349889591 then
                 local split = string.split(v, ":") -- uuid:name
                 local UnitName = split[1]
                 local uuid = split[2]
-    
     
                 FarmUnits[i] = {
                     ["Name"] = UnitName, 
