@@ -1369,7 +1369,7 @@ elseif game.PlaceId == 8349889591 then
 
                 ["Map"] = {
                     ["name"] = "Map:",
-                    ["value"] = Settings.Map .. Emojis.Map,
+                    ["value"] = CurrentMap .. Emojis.Map,
                     ["inline"] = true
                 },
 
