@@ -1347,9 +1347,16 @@ elseif game.PlaceId == 8349889591 then
         local Log = {
     
         }
+
+        repeat
+            task.wait()
+        until Loader.LevelData
+
+        task.wait(.5)
     
-        local CurrentMap = (Loader.LevelData._challenge and Loader.LevelData.map or Settings.Map)
-        local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[Loader.LevelData.map]) or Settings.Maps[CurrentMap]
+        local loadermap = string.split(Loader.LevelData.map, "_")[1]
+        local CurrentMap = (Loader.LevelData._challenge and loadermap or Settings.Map)
+        local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap]) or Settings.Maps[CurrentMap]
     
         function SendWebhook()
             task.wait(.5)
