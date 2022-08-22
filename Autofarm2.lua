@@ -924,7 +924,7 @@ if game.PlaceId == 8304191830 then
     function TeleportToMap()
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
-        local challenge =  Reward == "star_fruit_random" or Reward == "star_fruit_rainbow" or Reward == "star_remnant"
+        local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
         Lobby = FindOpenLobby(challenge)
         task.wait()
@@ -1034,7 +1034,7 @@ if game.PlaceId == 8304191830 then
         
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
-        local challenge =  Reward == "star_fruit_random" or Reward == "star_fruit_rainbow" or Reward == "star_remnant"
+        local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant" or Reward == "star_fruit_epic"
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
 
         print("Doing Challenge ".. tostring(challenge))
