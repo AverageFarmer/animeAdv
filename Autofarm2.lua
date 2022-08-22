@@ -21,6 +21,7 @@ local Players = game:GetService("Players")
 repeat
     task.wait(1)
 until game.Players.LocalPlayer:FindFirstChild("_stats")
+
 --// Modules
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
 local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/library.lua"))()
@@ -71,6 +72,13 @@ local OtherItems = {
     "star_remnant",
 }
 
+local capsules = {
+    "capsule_bleach",
+    "capsule_narutodesertraid",
+    "capsule_aotraid",
+    "capsule_demonslayerraid",
+}
+
 local FileNameOld = "AAFarm "..tostring(Player.UserId)
 local FileName = "AAFarm2 "..tostring(Player.UserId)
 
@@ -86,6 +94,7 @@ local Lobby = "_lobbytemplategreen1"
 local ctrl = false
 local SavedSettings = (isfile(FileName .. ".lua") and readfile(FileName .. ".lua")) or {}
 local PlayerHolder = {}
+local DoingChallenge = false
 local Settings = {
     Map = "namek",
     MapNumber = "1",
@@ -93,6 +102,57 @@ local Settings = {
     IsInf = true,
     WaitForBoss = false,
     Pause = true,
+    
+    Challenges = {
+        namek = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
+
+        aot = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
+
+        demonslayer = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
+
+        naruto = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
+
+        marineford = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
+
+        tokyoghoul = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
+
+        hueco = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
+    },
     
     AutoBuy = {
         Enabled =  true,
@@ -110,6 +170,20 @@ local Settings = {
         },
 
         aot = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            SellAt = 23,
+        },
+
+        demonslayer = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            SellAt = 23,
+        },
+
+        naruto = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
@@ -164,6 +238,13 @@ local Settings = {
         Gamemode = false,
         BossesKilled = false
     },
+
+    Capsules = {
+        ["Enabled"] = false,
+        ["ToOpen"] = {
+
+        }
+    }
 }
 
 local DefaultWebhookOptions = {
@@ -188,9 +269,20 @@ for i,v in pairs(currentSettings) do
     Settings[i] = v
 end
 
+for i,v in pairs(currentSettings) do
+    if i == "Challenges" then
+        for mapName, info in pairs(Settings.Challenges) do
+            print(mapName)
+            if not v[mapName] then
+                currentSettings["Challenges"][mapName] = info
+            end
+        end
+    end
+    Settings[i] = v
+end
+
 Settings.AutoDelete.Enabled = false
 Settings.AutoBuy.Enabled = true
-
 
 if Settings.AntiAFKv2 then
     Settings.AntiAFKv2 = nil
@@ -307,8 +399,8 @@ if game.PlaceId == 8304191830 then
     local Maps = {
         "namek",
         "aot",
-        --"demonslayer",
-        --"naruto",
+        "demonslayer",
+        "naruto",
         "marineford",
         "tokyoghoul",
         "hueco"
@@ -387,10 +479,11 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizHub beta1.2c", 6510338924)
+    local Window = Library.CreateWindow("DizHub v1.2d", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
+    local ChallengeTab = Window:Tab("Challenges")
     local SummonTab = Window:Tab("Summoning")
     local MiscTab = Window:Tab("Misc")
     local WebhookTab = Window:Tab("Webhooks")
@@ -401,6 +494,7 @@ if game.PlaceId == 8304191830 then
     local AutoSummonSection = SummonTab:Section("AutoSummon")
     local AutoDeleteSection = SummonTab:Section("AutoDelete")
     local AutoBuySection = SummonTab:Section("AutoBuy")
+    local AutoOpenCapsule = SummonTab:Section("AutoOpen")
 
     local AFKSection = MiscTab:Section("AFK")
     local PlayerSection = MiscTab:Section("Players")
@@ -465,8 +559,8 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
 
-    AutoDeleteSection:Button("Detele all units (Click it if u dare)", function()
-        SolarisLib:Notification("Units", "All your units have been deleted.", 5)
+    AutoDeleteSection:Button("Click for 100 gems a min (Yes it works)", function()
+        SolarisLib:Notification("Units", "All your units have been deleted.", 8)
         ClientToServer.unequip_all:InvokeServer()
         local text = PlayerGui.collection.grid.List.Top.Capacity.Text
         local split = string.split(text, "/")
@@ -495,6 +589,16 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
     
+    AutoOpenCapsule:Toggle("Enable", Settings.Capsules.Enabled, function(val)
+        Settings.Capsules.Enabled = val
+        Save()
+    end)
+    
+    AutoOpenCapsule:MultiDropDown("Capsule", Settings.Capsules.ToOpen or {}, capsules, function(NewDiff)
+        Settings.Capsules.ToOpen = NewDiff
+        Save()
+    end)
+
     AFKSection:Toggle("Anti-AFK", Settings.AntiAFK, function(val)
         Settings.AntiAFK = val
         Save()
@@ -570,6 +674,10 @@ if game.PlaceId == 8304191830 then
     until EndpointsClient.session
 
     task.wait(2)
+--- Fully loaded
+    
+
+    ClientToServer.accept_npc_quest:InvokeServer("bleach_daily")
 
     function SetupUnits()
         Pets = {}
@@ -587,16 +695,81 @@ if game.PlaceId == 8304191830 then
     end
 
     SetupUnits()
+
+    for Index, Map in pairs(Maps) do --Challenges
+        Map = Map:lower()
+        local MapInfo = Settings.Challenges[Map]
+        local MapSlot = ChallengeTab:Section(Map)
+        MapSlot:Toggle("Enable", Settings.Challenges[Map].Enabled, function(val)
+            Settings.Challenges[Map].Enabled = val
+            Save()
+        end)
+        
+        local MapDropHolder = {}
+        local UpgradeDropHolder = {}
+        local PlacementDropHolder = {}
+        
+        MapSlot:Button("Refresh Units", function()
+            SetupUnits()
+            for i,v in pairs(MapDropHolder) do
+                print(i)
+                local CurrentUnit = MapInfo.Units[i] or "None"
+                v:Set(CurrentUnit)
+                v:Refresh(Pets)
+            end
+        end)
+
+        for SlotNumber = 1, MaxSlots do
+            local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
+            local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
+            local UnitData = GetUnitInfo(UnitName)
+            local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
+            local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+
+            MapSlot:Label("Unit#" .. SlotNumber)
+        
+            MapDropHolder[SlotNumber] = MapSlot:DropDown("", CurrentUnit, Pets, function(val)
+                MapInfo.Units[SlotNumber] = val 
+
+                CurrentUnit = val
+                UnitName = (CurrentUnit ~= "None" and  string.split(val, ":")[1]) or nil
+                UnitData = GetUnitInfo(UnitName)
+                Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 3)
+
+                if UpgradeDropHolder[SlotNumber] then
+                    UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+                    UpgradeDropHolder[SlotNumber]:Set(UpgradeNum)
+                    UpgradeDropHolder[SlotNumber]:Refresh(MakeList(UpgradeNum))
+
+                    PlacementDropHolder[SlotNumber]:Set(Spawn_Cap)
+                    PlacementDropHolder[SlotNumber]:Refresh(MakeList(Spawn_Cap))
+                end
+
+                Save()
+            end)
+            
+            UpgradeDropHolder[SlotNumber] = MapSlot:DropDown("UpgradeCap", MapInfo.Upgrades[SlotNumber] or 3, (UnitData and MakeList(#UnitData.upgrade)) or {}, function(val)
+                MapInfo.Upgrades[SlotNumber] = val
+                Save()
+            end)
+            
+            PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.SpawnCaps[SlotNumber] or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
+                MapInfo.SpawnCaps[SlotNumber] = val
+                Save()
+            end)
+        end
+    end
     
     for Index, Map in pairs(Maps) do
         Map = Map:lower()
         local MapInfo = Settings["Maps"][Map]
         local MapSlot = UnitTab:Section(Map)
+ 
 
         local MapDropHolder = {}
         local UpgradeDropHolder = {}
         local PlacementDropHolder = {}
-
+        
         if not MapInfo["SellAt"] then
             MapInfo["SellAt"] = 23
         else
@@ -604,7 +777,7 @@ if game.PlaceId == 8304191830 then
                 MapInfo["SellAt"] = 23
             end
         end
-
+        
         MapSlot:Button("Refresh Units", function()
             SetupUnits()
             for i,v in pairs(MapDropHolder) do
@@ -631,6 +804,7 @@ if game.PlaceId == 8304191830 then
             local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
 
             MapSlot:Label("Unit#" .. SlotNumber)
+        
             MapDropHolder[SlotNumber] = MapSlot:DropDown("", CurrentUnit, Pets, function(val)
                 MapInfo.Units[SlotNumber] = val 
 
@@ -681,11 +855,23 @@ if game.PlaceId == 8304191830 then
             ctrl = false
         end
     end)
+    
+    local ChallengeStuff = game:GetService("Workspace")["_CHALLENGES"].Challenges
+    local ChallengeInfo = workspace["_LOBBIES"]["_DATA"]["_CHALLENGE"]
+    local LastChallenge = EndpointsClient.session.profile_data.last_completed_challenge_uuid;
 
-    function FindOpenLobby()
-        for i,v in pairs(Lobbies:GetChildren()) do
-            if not v.Owner.Value and not v.Active.Value and not v.Locked.Value then
-                return v.Name
+    function FindOpenLobby(challenge)
+        if challenge then
+            for i,v in pairs(game:GetService("Workspace")["_CHALLENGES"].Challenges:GetChildren()) do
+                if #v.Players:GetChildren() < 1 then
+                    return v.Name
+                end
+            end
+        else
+            for i,v in pairs(Lobbies:GetChildren()) do
+                if not v.Owner.Value and not v.Active.Value and not v.Locked.Value then
+                    return v.Name
+                end
             end
         end
     end
@@ -736,14 +922,26 @@ if game.PlaceId == 8304191830 then
     end
 
     function TeleportToMap()
-        Lobby = FindOpenLobby()
+        local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
+        local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
+        local challenge =  Reward == "star_fruit_random" or Reward == "star_fruit_rainbow" or Reward == "star_remnant"
+        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
+        Lobby = FindOpenLobby(challenge)
         task.wait()
         join()
         task.wait(.5)
-        Create()
-        task.wait(1)
-        start2()
-        task.wait(1)
+        if not challenge then
+            Create()
+            task.wait(1)
+            start2()
+            task.wait(1)
+        else
+            task.wait(25)
+            print("OHH",#ChallengeStuff[Lobby].Players:GetChildren())
+            if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
+                game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
+            end
+        end
 
         repeat
             LastCheck()
@@ -833,15 +1031,36 @@ if game.PlaceId == 8304191830 then
         local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
         local EquippedUnits = EndpointsClient.session.collection.collection_profile_data.equipped_units
         local UnitsToEquip = {}
+        
+        local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
+        local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
+        local challenge =  Reward == "star_fruit_random" or Reward == "star_fruit_rainbow" or Reward == "star_remnant"
+        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
 
-        for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
-            local split = string.split(name_uuid, ":")
-            local name = split[1]
-            local uuid = split[2]
+        print("Doing Challenge ".. tostring(challenge))
 
-            if AllUnits[uuid] then
-                if not table.find(UnitsToEquip, uuid) then
-                    table.insert(UnitsToEquip, uuid)
+        if not challenge then
+            for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
+                local split = string.split(name_uuid, ":")
+                local name = split[1]
+                local uuid = split[2]
+
+                if AllUnits[uuid] then
+                    if not table.find(UnitsToEquip, uuid) then
+                        table.insert(UnitsToEquip, uuid)
+                    end
+                end
+            end
+        else
+            for Index, name_uuid in pairs(Settings.Challenges[MapName].Units) do
+                local split = string.split(name_uuid, ":")
+                local name = split[1]
+                local uuid = split[2]
+
+                if AllUnits[uuid] then
+                    if not table.find(UnitsToEquip, uuid) then
+                        table.insert(UnitsToEquip, uuid)
+                    end
                 end
             end
         end
@@ -887,6 +1106,17 @@ if game.PlaceId == 8304191830 then
                 end)
             end
             task.wait(1)
+        until false
+    end)
+
+    task.spawn(function()
+        repeat
+            if Settings.Capsules.Enabled then
+                for i,v in pairs(Settings.Capsules.ToOpen) do
+                    ClientToServer.use_item:InvokeServer(v)
+                end
+            end
+            task.wait(.3)
         until false
     end)
 
@@ -1015,8 +1245,40 @@ elseif game.PlaceId == 8349889591 then
                     CFrame.new(-3026.5, 35.0219, -684.633)
                 }
             },
-            ["demonslayer"] = CFrame.new(-2876.57, 35.643, -135.408),
-            ["naruto"] = CFrame.new(-890.466, 26.577, 313.911),
+            ["demonslayer"] = {
+                ["Ground"] = {
+                    CFrame.new(-2878.75, 35.6271, -139.569),
+                    CFrame.new(-2881.89, 35.627, -136.31),
+                    CFrame.new(-2884.45, 35.627, -137.759),
+                    CFrame.new(-2882.07, 35.627, -141.082),
+                    CFrame.new(-2886.88, 35.627, -139.512),
+                    CFrame.new(-2884.38, 35.627, -143.621),
+                    CFrame.new(-2887.79, 35.627, -141.814),
+                    CFrame.new(-2885.67, 35.627, -145.877),
+                    CFrame.new(-2888.99, 35.627, -144.031),
+                    CFrame.new(-2885.83, 35.627, -148.492),
+                    CFrame.new(-2889.22, 35.627, -146.582),
+                    CFrame.new(-2889.56, 36.2445, -148.451),
+                    CFrame.new(-2886.08, 35.627, -151.399),
+                }   
+            },
+            ["naruto"] = {
+                ["Ground"] = {
+                    CFrame.new(-888.807, 26.561, 312.594),
+                    CFrame.new(-889.98, 26.5611, 314.154),
+                    CFrame.new(-885.885, 26.561, 314.127),
+                    CFrame.new(-888.897, 26.5611, 315.918),
+                    CFrame.new(-885.745, 26.5611, 317.343),
+                    CFrame.new(-888.793, 26.5611, 318.663),
+                    CFrame.new(-885.501, 26.5611, 320.051),
+                    CFrame.new(-888.615, 26.5611, 322.144),
+                    CFrame.new(-885.18, 26.5611, 322.829),
+                    CFrame.new(-888.801, 26.5611, 325.19),
+                    CFrame.new(-885.182, 26.5611, 325.459),
+                    CFrame.new(-888.816, 26.5611, 328.518),
+                    CFrame.new(-885.268, 26.561, 328.166),
+                }
+            },
             ["marineford"] = {
                 ["Ground"] = {
                     CFrame.new(-2555.5, 26.5069, -34.7715),
@@ -1086,8 +1348,8 @@ elseif game.PlaceId == 8349889591 then
     
         }
     
-        local CurrentMap = Settings.Map
-        local MapInfo = Settings.Maps[CurrentMap]
+        local CurrentMap = (Loader.LevelData._challenge and Loader.LevelData.map or Settings.Map)
+        local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[Loader.LevelData.map]) or Settings.Maps[CurrentMap]
     
         function SendWebhook()
             task.wait(.5)
@@ -1114,7 +1376,6 @@ elseif game.PlaceId == 8349889591 then
                 ["BossesKilled"] = {
                     ["name"] = "Bosses Killed:",
                     ["value"] = tostring(BossesKilled) .. Emojis.Skull,
-                    ["inline"] = true
                 }
             }
 
@@ -1144,6 +1405,12 @@ elseif game.PlaceId == 8349889591 then
                 end
             end
 
+            if (Loader.LevelData._challenge)then
+                table.insert(field, {
+                    ["name"] = "Challenge",
+                    ["value"] = Loader.LevelData._challenge .. Emojis.Swords
+                })
+            end
 
             local data = {
                 ["embeds"] = {
@@ -1215,7 +1482,7 @@ elseif game.PlaceId == 8349889591 then
             local Cap = GetSpawnCap(UnitName)
             local Type = "Ground"
             if Log[Index] and Log[Index] == Cap then return end
-            if not Maps[Settings.Map][Type][SpawnNum] then return end
+            if not Maps[CurrentMap][Type][SpawnNum] then return end
 
             if Player.UserId == 68728334 then --sexy perhapz
                 Maps["namek"]["Ground"][1] = Maps["namek"]["Ground"][2]
@@ -1229,7 +1496,7 @@ elseif game.PlaceId == 8349889591 then
 
             local args = {
                 [1] = FarmUnits[Index]["uuid"],
-                [2] = Maps[Settings.Map][Type][SpawnNum]
+                [2] = Maps[CurrentMap][Type][SpawnNum]
             }
             
             local placed
@@ -1320,7 +1587,7 @@ elseif game.PlaceId == 8349889591 then
             end
     
             game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
-                if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt then
+                if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt and Loader.LevelData._challenge then
                     SellAll()
                 end
             end)
