@@ -1587,7 +1587,7 @@ elseif game.PlaceId == 8349889591 then
             end
     
             game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
-                if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt and Loader.LevelData._challenge then
+                if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt and not Loader.LevelData._challenge then
                     SellAll()
                 end
             end)
