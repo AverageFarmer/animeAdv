@@ -936,7 +936,7 @@ if game.PlaceId == 8304191830 then
             start2()
             task.wait(1)
         else
-            task.wait(28)
+            task.wait(27)
             print("OHH",#ChallengeStuff[Lobby].Players:GetChildren())
             if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
                 game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
@@ -1354,7 +1354,8 @@ elseif game.PlaceId == 8349889591 then
 
         task.wait(.5)
     
-        local loadermap = string.split(Loader.LevelData.map, "_")[1]
+        local loadermap = Loader.LevelData.world
+
         local CurrentMap = (Loader.LevelData._challenge and loadermap or Settings.Map)
         local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap]) or Settings.Maps[CurrentMap]
     
