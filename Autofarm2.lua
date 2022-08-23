@@ -1420,7 +1420,7 @@ elseif game.PlaceId == 8349889591 then
 
                 table.insert(field, {
                     ["name"] = "Reward Type",
-                    ["value"] = Loader.LevelData._reward .. Emojis.Swords
+                    ["value"] = Loader.LevelData._reward .. "💰"
                 })
             end
 
