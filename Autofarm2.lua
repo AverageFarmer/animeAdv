@@ -936,7 +936,7 @@ if game.PlaceId == 8304191830 then
             start2()
             task.wait(1)
         else
-            task.wait(25)
+            task.wait(28)
             print("OHH",#ChallengeStuff[Lobby].Players:GetChildren())
             if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
                 game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
