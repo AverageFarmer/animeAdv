@@ -1417,6 +1417,11 @@ elseif game.PlaceId == 8349889591 then
                     ["name"] = "Challenge",
                     ["value"] = Loader.LevelData._challenge .. Emojis.Swords
                 })
+
+                table.insert(field, {
+                    ["name"] = "Reward Type",
+                    ["value"] = Loader.LevelData._reward .. Emojis.Swords
+                })
             end
 
             local data = {
