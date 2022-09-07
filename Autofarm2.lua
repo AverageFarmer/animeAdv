@@ -1125,14 +1125,14 @@ if game.PlaceId == 8304191830 then
             for i = 1, spaceneeded do
                 local uuid = Indexes[i]
                 ClientToServer.unequip_unit:InvokeServer(uuid)
-                task.wait(.2)
+                task.wait(1)
             end
 
             task.wait(.2)
 
             for _, uuid in pairs(unitsNotThere) do
                 ClientToServer.equip_unit:InvokeServer(uuid)
-                task.wait(.2)
+                task.wait(.4)
             end
         end
 
