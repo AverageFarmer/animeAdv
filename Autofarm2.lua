@@ -1132,7 +1132,7 @@ if game.PlaceId == 8304191830 then
 
             for _, uuid in pairs(unitsNotThere) do
                 ClientToServer.equip_unit:InvokeServer(uuid)
-                task.wait(2)
+                task.wait(3)
             end
         end
 
