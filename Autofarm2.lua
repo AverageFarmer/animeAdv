@@ -71,6 +71,7 @@ local EvoItems = {
     "kite_dice",
     "pitou_puppet",
 }
+
 local OtherItems = {
     "summon_ticket",
     "StarFruit",
@@ -95,7 +96,7 @@ if (isfile(FileNameOld .. ".lua")) then
 end
 
 -- AutoLaunch
-syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
+syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua"))
 
 --// Vars
 local Lobby = "_lobbytemplategreen1"
