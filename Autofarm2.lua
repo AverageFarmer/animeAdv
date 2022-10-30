@@ -2007,13 +2007,13 @@ elseif game.PlaceId == 8349889591 then
             
             {
                 ["name"] = "Wave ended:",
-                ["value"] = tostring(endstats.num_waves) .. Emojis.Wave,
+                ["value"] = tostring(endstats.waves_completed) .. Emojis.Wave,
                 ["inline"] = true
             },
             
             {
                 ["name"] = "Time Finished:",
-                ["value"] = (string.format("%s:%s", math.floor(endstats.time_taken/60%60), endstats.time_taken%60)) .. Emojis.Time,
+                ["value"] = (string.format("%s:%s", math.floor(endstats.time_taken/60%60), math.floor(endstats.time_taken%60))) .. Emojis.Time,
                 ["inline"] = true
             },
         }
