@@ -2272,7 +2272,9 @@ elseif game.PlaceId == 8349889591 then
             if game:GetService("Workspace")["_wave_num"].Value >= SellAt and not Loader.LevelData._challenge then
                 if Leave then
                     
-                    SendWebhook()
+                    task.spawn(function()
+                        SendWebhook()
+                    end)
                     Settings.DoingMission = false
                     print("Current MIssion: "..tostring(Settings.CurrentMission))
                     if Settings.CurrentMissions[Settings.CurrentMission] then
