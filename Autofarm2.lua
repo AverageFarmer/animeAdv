@@ -154,6 +154,9 @@ local Settings = {
     DoMissions = false,
     AutoTowerInf = false,
 
+    PrioritizeFarm = false,
+
+
     DoingMission = false;
     CurrentMission = nil,
     CurrentMissions = {},
@@ -1966,7 +1969,7 @@ elseif game.PlaceId == 8349889591 then
         -- time_taken
         -- waves_completed
         -- num_waves
-        local resource_rewards = enddata.resource_rewards
+        local resource_reward = enddata.resource_reward
         -- candies
         local new_units = enddata.new_units
         local new_items = enddata.new_items
@@ -2058,10 +2061,10 @@ elseif game.PlaceId == 8349889591 then
             })
         end
 
-        if resource_rewards.Candies then
+        if resource_reward.Candies then
             table.insert(field, {
                 ["name"] = "Candies",
-                ["value"] = string.format("%s %s", resource_rewards.Candies, Emojis.Candy)
+                ["value"] = string.format("%s %s", resource_reward.Candies, Emojis.Candy)
             })
         end
 
@@ -2190,6 +2193,7 @@ elseif game.PlaceId == 8349889591 then
     end
 
     local Units_to_Upgrade = {}
+    local moneyUnits = {}
     local UnitsDown = {}
 
     function SetUpgradeUnits()
@@ -2198,7 +2202,11 @@ elseif game.PlaceId == 8349889591 then
                 if v:FindFirstChild("_stats") then
                     if v._stats:FindFirstChild("player") and  v._stats:FindFirstChild("player").Value == Player then
                         if v._stats:FindFirstChild("parent_unit") and v._stats:FindFirstChild("parent_unit").Value then return end
-                        table.insert(Units_to_Upgrade, v)
+                        if Settings.PrioritizeFarm and v._stats:FindFirstChild("farm_amount") ~= 0 then
+                            table.insert(moneyUnits, v)
+                        else
+                            table.insert(Units_to_Upgrade, v)
+                        end
                         table.insert(UnitsDown, v)
                     end
                 end
@@ -2208,6 +2216,25 @@ elseif game.PlaceId == 8349889591 then
 
     function upgradeUnits()
         if #Units_to_Upgrade == 0 then return end
+        if Settings.PrioritizeFarm and #moneyUnits ~= 0 then
+            for i,v in pairs(moneyUnits) do
+                local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
+                if v._stats.upgrade.Value ~= MaxUpgrade then 
+                    print(MaxUpgrade, v.Name)
+    
+                    local Upgraded 
+    
+                    repeat
+                        task.wait(2)
+                        Upgraded = ClientToServer:WaitForChild("upgrade_unit_ingame"):InvokeServer(v)
+                    until Upgraded or Break
+    
+                    if Break then return end
+                else
+                    moneyUnits[i] = nil
+                end
+            end
+        end
         for i, v in pairs(Units_to_Upgrade) do               
             local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
             if v._stats.upgrade.Value ~= MaxUpgrade then 
