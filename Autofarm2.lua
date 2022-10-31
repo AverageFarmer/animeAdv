@@ -2058,6 +2058,13 @@ elseif game.PlaceId == 8349889591 then
             })
         end
 
+        if resource_rewards.Candies then
+            table.insert(field, {
+                ["name"] = "Candies",
+                ["value"] = string.format("%s %s", resource_rewards.Candies, Emojis.Candy)
+            })
+        end
+
         if new_items and #new_items >= 1 then
             for i,v in pairs(new_items) do
                 if i == 1 then
