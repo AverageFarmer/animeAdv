@@ -1,10 +1,6 @@
 if _G.Loaded then return end
 _G.Loaded =  true
 
-pcall(function()
-    getgenv().hookfunction = gdfg
-end) 
-
 repeat
     task.wait()
 until game.Players.LocalPlayer
@@ -149,13 +145,15 @@ local Settings = {
     WaitForBoss = false,
     Pause = true,
 
+    DoEvent = false,
     DoChallenges = false,
     DoRaid = false,
     DoMissions = false,
     AutoTowerInf = false,
 
-    PrioritizeFarm = false,
 
+    PrioritizeFarm = false,
+    AutoAbility = true,
 
     DoingMission = false;
     CurrentMission = nil,
@@ -164,6 +162,15 @@ local Settings = {
 
     Raid = {
 
+    },
+
+    Events = {
+        thriller_bark = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            SellAt = 23,
+        }
     },
     
     Challenges = {
@@ -239,7 +246,7 @@ local Settings = {
     },
     
     AutoBuy = {
-        Enabled =  true,
+        Enabled = false,
         OtherItems = {"summon_ticket"},
         EvoItems = {},
         Duplicates = false -- Only applies to EvoItems
@@ -642,18 +649,20 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizHub v1.2i", 6510338924)
+    local Window = Library.CreateWindow("DizHub v1.3a", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
     local ChallengeTab = Window:Tab("Challenges")
     local MissionTab = Window:Tab("Missions")
     local RaidTab = Window:Tab("Raids")
+    local EventTab = Window:Tab("Event")
     local SummonTab = Window:Tab("Summoning")
     local MiscTab = Window:Tab("Misc")
     local WebhookTab = Window:Tab("Webhooks")
 
     local MapSettings = AutoFarmTab:Section("Map Settings")
+    local UnitSettings = AutoFarmTab:Section("UnitSettings")
     local TeleportSettings = AutoFarmTab:Section("Teleport Settings")
     local OtherFarms = AutoFarmTab:Section("Other Farms")
 
@@ -689,11 +698,25 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
 
+    UnitSettings:Toggle("AutoAbility", Settings.AutoAbility, function(val)
+        Settings.AutoAbility = val
+        Save()
+    end)
+
+    UnitSettings:Toggle("Prioritize Farm", Settings.PrioritizeFarm, function(val)
+        Settings.PrioritizeFarm = val
+        Save()
+    end)
+
     local Pause = TeleportSettings:Toggle("Pause", Settings.Pause, function(val)
         Settings.Pause = val
         Save()
     end)
 
+    OtherFarms:Toggle("Candy Event", Settings.DoEvent, function(val)
+        Settings.DoEvent = val
+        Save()
+    end)
     OtherFarms:Toggle("Challenges", Settings.DoChallenges, function(val)
         Settings.DoChallenges = val
         Save()
@@ -1127,6 +1150,91 @@ if game.PlaceId == 8304191830 then
         end
     end
 
+    function EventSetup(Maps)
+        for _, Map in pairs(Maps) do
+            Map = Map:lower()
+            local MapInfo = Settings["Events"][Map]
+            local MapSlot = EventTab:Section(Map)
+     
+    
+            local MapDropHolder = {}
+            local UpgradeDropHolder = {}
+            local PlacementDropHolder = {}
+            
+            if not MapInfo["SellAt"] then
+                MapInfo["SellAt"] = 23
+            else
+                if typeof(MapInfo["SellAt"]) == "table" then
+                    MapInfo["SellAt"] = 23
+                end
+            end
+            
+            MapSlot:Button("Refresh Units", function()
+                SetupUnits()
+                for i,v in pairs(MapDropHolder) do
+                    local CurrentUnit = MapInfo.Units[i] or "None"
+                    v:Set(CurrentUnit)
+                    v:Refresh(Pets)
+                end
+            end)
+    
+            local SellAt
+            SellAt = MapSlot:TextBox("Sell At Wave:", MapInfo["SellAt"], function(val)
+                val = tonumber(val) or 1
+                SellAt:Set(val)
+                MapInfo["SellAt"] = val
+                Save()
+            end)
+    
+            MapSlot:Toggle("Leave at Sell Wave", MapInfo["LeaveAtWave"] or false, function(val)
+                MapInfo["LeaveAtWave"] = val
+                Save()
+            end)
+    
+            for SlotNumber = 1, MaxSlots do
+                local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
+                local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
+                local UnitData = GetUnitInfo(UnitName)
+                local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
+                local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+    
+                MapSlot:Label("Unit#" .. SlotNumber)
+            
+                MapDropHolder[SlotNumber] = MapSlot:DropDown("", CurrentUnit, Pets, function(val)
+                    MapInfo.Units[SlotNumber] = val 
+    
+                    CurrentUnit = val
+                    UnitName = (CurrentUnit ~= "None" and  string.split(val, ":")[1]) or nil
+                    UnitData = GetUnitInfo(UnitName)
+                    Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 3)
+    
+                    if UpgradeDropHolder[SlotNumber] then
+                        UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+                        UpgradeDropHolder[SlotNumber]:Set(UpgradeNum)
+                        UpgradeDropHolder[SlotNumber]:Refresh(MakeList(UpgradeNum))
+    
+                        PlacementDropHolder[SlotNumber]:Set(Spawn_Cap)
+                        PlacementDropHolder[SlotNumber]:Refresh(MakeList(Spawn_Cap))
+                    end
+    
+                    Save()
+                end)
+                
+                UpgradeDropHolder[SlotNumber] = MapSlot:DropDown("UpgradeCap", MapInfo.Upgrades[SlotNumber] or 3, (UnitData and MakeList(#UnitData.upgrade)) or {}, function(val)
+                    MapInfo.Upgrades[SlotNumber] = val
+                    Save()
+                end)
+                
+                PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.SpawnCaps[SlotNumber] or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
+                    MapInfo.SpawnCaps[SlotNumber] = val
+                    Save()
+                end)
+            end
+        end
+    end
+
+    EventSetup({"thriller_bark"})
+
     UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
         if input.UserInputType == Enum.UserInputType.MouseButton1 and ctrl then
             local Character = Player.Character
@@ -1163,7 +1271,12 @@ if game.PlaceId == 8304191830 then
     function FindOpenLobby(challenge, raid)
         print("israid: "..tostring(raid))
         if not raid then
-            if challenge then
+            if Settings.DoEvent then
+                local lob = game:GetService("Workspace")["_DUNGEONS"].Lobbies["_lobbytemplate_event330"]
+                if #lob.Players:GetChildren() < 1 then
+                    return lob.Name
+                end
+            elseif challenge then
                 for i,v in pairs(game:GetService("Workspace")["_CHALLENGES"].Challenges:GetChildren()) do
                     if #v.Players:GetChildren() < 1 then
                         return v.Name
@@ -1226,9 +1339,7 @@ if game.PlaceId == 8304191830 then
             end
         end
 
-        TeleportToMap()
-
-        return true
+        return TeleportToMap()
     end
    
     function TeleportToMap()
@@ -1245,7 +1356,6 @@ if game.PlaceId == 8304191830 then
         if raid then
             MapName = raid
         end
-
 
         for id, v in pairs(Settings.CurrentMissions) do
             if not Settings.DoMissions then break end
@@ -1269,7 +1379,13 @@ if game.PlaceId == 8304191830 then
         task.wait(.5)
         
         if not raid then
-            if Settings.AutoTowerInf then
+            if Settings.DoEvent then
+                task.wait(17)
+                local lob = game:GetService("Workspace")["_DUNGEONS"].Lobbies["_lobbytemplate_event330"]
+                if #lob.Players:GetChildren() > 1 then
+                    ClientToServer.request_leave_lobby:InvokeServer(Lobby)
+                end
+            elseif Settings.AutoTowerInf then
                 local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
                 ClientToServer.request_start_infinite_tower:InvokeServer(TowerNum)
             else
@@ -1302,10 +1418,7 @@ if game.PlaceId == 8304191830 then
             end
         end
 
-        repeat
-            LastCheck()
-            task.wait(3)
-        until false
+        return LastCheck()
     end
 
     function teleport()
@@ -1436,13 +1549,24 @@ if game.PlaceId == 8304191830 then
         if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (currentmissionid and Settings.DoMissions) then  challenge = false end
 
         if not raid then
-            if Settings.AutoTowerInf then
+            if Settings.DoEvent then
+                for Index, name_uuid in pairs(Settings.Events["thriller_bark"].Units) do
+                    local split = string.split(name_uuid, ":")
+                    local name = split[1]
+                    local uuid = split[2]
+
+                    if AllUnits[uuid] then
+                        if not table.find(UnitsToEquip, uuid) then
+                            table.insert(UnitsToEquip, uuid)
+                        end
+                    end
+                end
+            elseif Settings.AutoTowerInf then
                 local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
                 local world = InfiniteTowerServiceCore.get_world_for_floor(TowerNum)
                 if world == "tokyo_ghoul" then
                     world = "tokyoghoul"
                 end
-                print(world)
 
                 for Index, name_uuid in pairs(Settings.Maps[world].Units) do
                     local split = string.split(name_uuid, ":")
@@ -1913,7 +2037,28 @@ elseif game.PlaceId == 8349889591 then
                 CFrame.new(375, 122.353, -80.3606),
                 CFrame.new(359.159, 122.528, -59.111),
             },
-            
+        },
+
+        ["thriller_bark"] = {
+            ["Ground"] = {
+                CFrame.new(-182.597, 110.67, -608.071),
+                CFrame.new(-178.131, 110.67, -608.228),
+                CFrame.new(-179.826, 110.67, -612.413),
+                CFrame.new(-179.05, 110.674, -610.353),
+                CFrame.new(-183.44, 110.67, -609.999),
+                CFrame.new(-184.3, 110.674, -612.134),
+                CFrame.new(-185.457, 110.67, -614.009),
+                CFrame.new(-185.212, 111.232, -608.611),
+                CFrame.new(-186.131, 110.67, -610.757),
+                CFrame.new(-187.331, 110.674, -612.962),
+                CFrame.new(-187.472, 110.892, -615.463),
+                CFrame.new(-178.276, 110.67, -614.697),
+                CFrame.new(-179.704, 110.67, -616.49),
+                CFrame.new(-175.784, 110.674, -610.197),
+                CFrame.new(-176.846, 110.674, -612.697),
+                CFrame.new(-184.528, 110.67, -605.976),
+                CFrame.new(-187.388, 110.67, -608.95),
+            }
         }
     }
 
@@ -1939,7 +2084,9 @@ elseif game.PlaceId == 8349889591 then
         fullname = fullname .. v
     end
 
-    if Maps[fullname] then
+    if Maps[Loader.LevelData.map] then
+        loadermap = Loader.LevelData.map
+    elseif Maps[fullname] then
         loadermap = fullname
     elseif Maps[nameSplit[1]] then
         loadermap = nameSplit[1]
@@ -1953,12 +2100,12 @@ elseif game.PlaceId == 8349889591 then
     end
 
     local CurrentMap = loadermap
-    local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap] or Loader.LevelData._gamemode == "infinite_tower" and Settings.Maps[CurrentMap]) or Settings.Maps[CurrentMap]
+    print("CurrentMap: " .. CurrentMap)
+    local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData._IS_EVENT_RAID and Settings.Events[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap] or Loader.LevelData._gamemode == "infinite_tower" and Settings.Maps[CurrentMap]) or Settings.Maps[CurrentMap]
     if Loader.LevelData.map == "demonslayer_raid" then
         CurrentMap = Loader.LevelData.map
         MapInfo = Settings.Raid["demonslayer"]
     end
-    print("CurrentMap: ".. CurrentMap)
 
     function SendWebhook()
         task.wait(.5)
@@ -2202,7 +2349,7 @@ elseif game.PlaceId == 8349889591 then
                 if v:FindFirstChild("_stats") then
                     if v._stats:FindFirstChild("player") and  v._stats:FindFirstChild("player").Value == Player then
                         if v._stats:FindFirstChild("parent_unit") and v._stats:FindFirstChild("parent_unit").Value then return end
-                        if Settings.PrioritizeFarm and v._stats:FindFirstChild("farm_amount") ~= 0 then
+                        if Settings.PrioritizeFarm and v._stats:FindFirstChild("farm_amount").Value ~= 0 then
                             table.insert(moneyUnits, v)
                         else
                             table.insert(Units_to_Upgrade, v)
@@ -2234,22 +2381,23 @@ elseif game.PlaceId == 8349889591 then
                     moneyUnits[i] = nil
                 end
             end
-        end
-        for i, v in pairs(Units_to_Upgrade) do               
-            local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
-            if v._stats.upgrade.Value ~= MaxUpgrade then 
-                print(MaxUpgrade, v.Name)
-
-                local Upgraded 
-
-                repeat
-                    task.wait(2)
-                    Upgraded = ClientToServer:WaitForChild("upgrade_unit_ingame"):InvokeServer(v)
-                until Upgraded or Break
-
-                if Break then return end
-            else
-                Units_to_Upgrade[i] = nil
+        else
+            for i, v in pairs(Units_to_Upgrade) do               
+                local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
+                if v._stats.upgrade.Value ~= MaxUpgrade then 
+                    print(MaxUpgrade, v.Name)
+    
+                    local Upgraded 
+    
+                    repeat
+                        task.wait(2)
+                        Upgraded = ClientToServer:WaitForChild("upgrade_unit_ingame"):InvokeServer(v)
+                    until Upgraded or Break
+    
+                    if Break then return end
+                else
+                    Units_to_Upgrade[i] = nil
+                end
             end
         end
         task.wait(.1)
@@ -2329,6 +2477,7 @@ elseif game.PlaceId == 8349889591 then
         task.wait(1)
 
         task.spawn(function()
+            if not Settings.AutoAbility then return end
             local BuffBypass = {
                 erwin = 20
             }
