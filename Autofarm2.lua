@@ -2449,7 +2449,7 @@ elseif game.PlaceId == 8349889591 then
         end
 
         game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
-            local SellAt = Settings.DoingMission and 25 or Settings["Maps"][Settings.Map].SellAt
+            local SellAt = Settings.DoingMission and 25 or MapInfo.SellAt
             local Leave = Settings.DoingMission and true or MapInfo["LeaveAtWave"]
             if game:GetService("Workspace")["_wave_num"].Value >= SellAt and not Loader.LevelData._challenge then
                 if Leave then
