@@ -13,7 +13,7 @@ local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
---task.wait(12)
+
 local LoadWaitTime = os.time()
 local Loaded = false
 
@@ -2123,10 +2123,13 @@ elseif game.PlaceId == 8349889591 then
 
         local listofItems = ""
         
+        local profiledata = EndpointsClient.session.profile_data
+        local resouces = profiledata.resources
+
         local holder = {
             ["TotalGems"] = {
                 ["name"] = "Total Gems:",
-                ["value"] = (tostring(Player._stats.gem_amount.Value)) .. Emojis.Diamond,
+                ["value"] = (tostring(profiledata.gem_amount)) .. Emojis.Diamond,
                 ["inline"] = true
             },
 
@@ -2149,6 +2152,11 @@ elseif game.PlaceId == 8349889591 then
         }
 
         local field = {
+            {
+                ["name"] = "Total Candies:",
+                ["value"] = (tostring(resouces.Candies)) .. Emojis.Candy,
+                ["inline"] = true
+            },
             {
                 ["name"] = "Gems recived:",
                 ["value"] = string.match(enddata.gem_reward, "%d+") .. Emojis.Diamond,
