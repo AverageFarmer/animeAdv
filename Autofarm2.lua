@@ -42,6 +42,7 @@ local Loader = require(src:WaitForChild("Loader"));
 local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
 local GUIService = Loader.load_client_service(script, "GUIService");
 local HatchServiceClient = Loader.load_client_service(script, "HatchServiceClient");
+local Banners = require(Data:WaitForChild("Banners"))
 local InfiniteTowerServiceCore = require(src.core.Services.InfiniteTowerServiceCore)
 local UnitsInfo = require(Data.Units)
 local Items = require(Data:WaitForChild("ItemsForSale"))
@@ -54,6 +55,7 @@ local ClientToServer = ReplicatedStorage:WaitForChild("endpoints"):WaitForChild(
 local Player = Players.LocalPlayer or Players.PlayerAdded:Wait()
 local Mouse = Player:GetMouse()
 local PlayerGui = Player:WaitForChild("PlayerGui")
+local SelectedBanner = "Standard"
 
 local EvoItems = {
     "aot_blade",
@@ -80,6 +82,12 @@ local EvoItems = {
     "netero_rose",
     "kite_dice",
     "pitou_puppet",
+    "asta_wing",
+    "noelle_scale",
+    "yuno_crown",
+    "yami_katana",
+    "luck_horns",
+    "six_eyes"
 }
 
 local OtherItems = {
@@ -648,6 +656,18 @@ if game.PlaceId == 8304191830 then
         return false
     end
 
+    function GetBanners()
+        local banners = {}
+        
+        for BannerName, BannerInfo in pairs(Banners) do
+            if BannerInfo.active then
+                table.insert(banners, BannerInfo.id)
+            end
+        end
+
+        return banners
+    end
+
     --// UI
     local Window = Library.CreateWindow("DizHub v1.3a", 6510338924)
 
@@ -732,6 +752,10 @@ if game.PlaceId == 8304191830 then
     OtherFarms:Toggle("Auto Tower", Settings.AutoTowerInf, function(val)
         Settings.AutoTowerInf = val
         Save()
+    end)
+
+    AutoSummonSection:DropDown("Banner Selected", SelectedBanner,  GetBanners(), function(val)
+        SelectedBanner = val
     end)
     
     AutoSummonSection:Toggle("Enabled", Settings.AutoSummon.Enabled, function(val)
@@ -1490,13 +1514,13 @@ if game.PlaceId == 8304191830 then
         for _,ShopitemName in pairs(shopitems) do
             for _,ItemToBuy in pairs(Settings.AutoBuy.OtherItems or {"summon_ticket"}) do
                 if string.match(ShopitemName, "%a+[%p %a]+") == ItemToBuy then
-                    game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_travelling_merchant_item:InvokeServer(ShopitemName)
+                    ClientToServer.buy_travelling_merchant_item:InvokeServer(ShopitemName)
                 end
             end
 
             for _,ItemToBuy in pairs(Settings.AutoBuy.EvoItems or {}) do
                 if string.match(ShopitemName, "%a+[%p %a]+") == ItemToBuy then
-                    game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_travelling_merchant_item:InvokeServer(ShopitemName)
+                    ClientToServer.buy_travelling_merchant_item:InvokeServer(ShopitemName)
                 end
             end
         end
@@ -1511,7 +1535,7 @@ if game.PlaceId == 8304191830 then
                 summonnum = "gems10" 
             end
             
-            game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_random_fighter:InvokeServer("dbz_fighter", summonnum)
+            ClientToServer.buy_from_banner:InvokeServer(SelectedBanner, summonnum)
         end
     end
 
