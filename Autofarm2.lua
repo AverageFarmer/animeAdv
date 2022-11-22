@@ -157,6 +157,7 @@ local Settings = {
     DoChallenges = false,
     DoRaid = false,
     DoMissions = false,
+    InfQuests = false,
     AutoTowerInf = false,
 
 
@@ -540,7 +541,8 @@ if game.PlaceId == 8304191830 then
         "hueco",
         "hxhant",
         "magnolia",
-        "jjk"
+        "jjk",
+        "clover"
     }
 
     local Numbers = {
@@ -669,7 +671,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizHub v1.3a", 6510338924)
+    local Window = Library.CreateWindow("DizHub v1.3a.5", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
@@ -751,6 +753,10 @@ if game.PlaceId == 8304191830 then
     end)
     OtherFarms:Toggle("Auto Tower", Settings.AutoTowerInf, function(val)
         Settings.AutoTowerInf = val
+        Save()
+    end)
+    OtherFarms:Toggle("Inf Quest", Settings.InfQuests, function(val)
+        Settings.InfQuests = val
         Save()
     end)
 
@@ -1103,12 +1109,14 @@ if game.PlaceId == 8304191830 then
         local UpgradeDropHolder = {}
         local PlacementDropHolder = {}
         
-        if not MapInfo["SellAt"] then
-            MapInfo["SellAt"] = 23
-        else
-            if typeof(MapInfo["SellAt"]) == "table" then
-                MapInfo["SellAt"] = 23
-            end
+        if not MapInfo then
+            Settings.Maps[Map] = {
+                Units = {},
+                Upgrades = {},
+                SpawnCaps = {},
+                SellAt = 23,
+            }
+            MapInfo = Settings.Maps[Map]
         end
         
         MapSlot:Button("Refresh Units", function()
@@ -1553,6 +1561,18 @@ if game.PlaceId == 8304191830 then
                     ClientToServer.redeem_quest:InvokeServer(QuestUUID)
                 end
             end
+        end
+    end
+
+    function GetInfQuest()
+        local QuestsClass = EndpointsClient.session.quest_handler.quest_profile_data.quests
+
+        for i,v in pairs(QuestsClass) do
+            if not v.quest_progress then continue end
+            local QuestUUID = i
+            local level = v.quest_info.quest_class.level_id
+            
+            return level
         end
     end
 
@@ -2094,6 +2114,29 @@ elseif game.PlaceId == 8349889591 then
                 CFrame.new(375, 122.353, -80.3606),
                 CFrame.new(359.159, 122.528, -59.111),
             },
+        },
+
+        ["clover"] = {
+            ["Ground"] = {
+                CFrame.new(-171.882, 2.52738, -11.6291),
+                CFrame.new(-174.87, 2.52738, -15.9221),
+                CFrame.new(-176.167, 2.52738, -14.344),
+                CFrame.new(-174.031, 2.52929, -11.4063),
+                CFrame.new(-178.314, 2.52929, -13.9648),
+                CFrame.new(-172.853, 2.52929, -9.46101),
+                CFrame.new(-180.097, 2.52929, -13.3828),
+                CFrame.new(-178.797, 2.52929, -11.5045),
+                CFrame.new(-175.231, 2.52929, -8.82416),
+                CFrame.new(-174.165, 2.52929, -6.72339),
+                CFrame.new(-176.406, 2.52929, -6.33553),
+                CFrame.new(-180.23, 2.52929, -8.88429),
+                CFrame.new(-181.005, 2.52929, -10.9541),
+                CFrame.new(-174.791, 2.52929, -3.88734),
+                CFrame.new(-182.413, 2.52929, -9.48935),
+                CFrame.new(-180.816, 2.52929, -6.71556),
+                CFrame.new(-177.938, 2.52929, -2.12836),
+                CFrame.new(-182.148, 2.52929, -0.960998),
+            }
         },
 
         ["thriller_bark"] = {
