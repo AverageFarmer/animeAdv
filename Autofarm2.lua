@@ -2186,6 +2186,8 @@ elseif game.PlaceId == 8349889591 then
 
     if Maps[Loader.LevelData.map] then
         loadermap = Loader.LevelData.map
+    elseif Maps[Loader.LevelData.world] then
+        loadermap = Loader.LevelData.world
     elseif Maps[fullname] then
         loadermap = fullname
     elseif Maps[nameSplit[1]] then
@@ -2198,6 +2200,7 @@ elseif game.PlaceId == 8349889591 then
             end
         end
     end
+
 
     local CurrentMap = loadermap
     print("CurrentMap: " .. CurrentMap)
