@@ -43,7 +43,6 @@ local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
 local GUIService = Loader.load_client_service(script, "GUIService");
 local HatchServiceClient = Loader.load_client_service(script, "HatchServiceClient");
 local Banners = require(Data:WaitForChild("Banners"))
-local InfiniteTowerServiceCore = require(src.core.Services.InfiniteTowerServiceCore)
 local UnitsInfo = require(Data.Units)
 local Items = require(Data:WaitForChild("ItemsForSale"))
 local attacks = require(Data.Attacks)
@@ -1640,7 +1639,7 @@ if game.PlaceId == 8304191830 then
                 end
             elseif Settings.AutoTowerInf then
                 local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
-                local world = InfiniteTowerServiceCore.get_world_for_floor(TowerNum)
+                local world = nil
                 if world == "tokyo_ghoul" then
                     world = "tokyoghoul"
                 end
