@@ -128,13 +128,8 @@ function isDev()
 end
 
 -- AutoLaunch
-if Player.UserId == 68728334 then
-    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/Andrew/Lbozo.lua"))
-elseif isDev() then
-    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
-else
-    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua"))
-end
+
+syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua"))
 
 --// Vars
 local Lobby = "_lobbytemplategreen1"
